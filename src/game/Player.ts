@@ -25,11 +25,12 @@ export class Player extends AnimatedSprite {
     vy: 0,
   };
 
-  public heatingMax = 200;
+  public heatingMax = 10;
   public heating = 0;
   public isAlive = true;
 
   public state!: PlayerState;
+  scene: any;
   constructor({ shipAnimation }: IPlayerOptions) {
     super(shipAnimation);
     this.animationSpeed = 0.05;

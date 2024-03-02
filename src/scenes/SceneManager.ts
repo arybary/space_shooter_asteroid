@@ -3,8 +3,8 @@ import { Application, Container, type DisplayObject } from 'pixi.js'
 export interface IScene extends DisplayObject {
   handleUpdate: (deltaMS: number) => void
   handleResize: (options: {
-    viewWidth: number
-    viewHeight: number
+    viewWidth: number,
+    viewHeight: number,
   }) => void
 }
 

@@ -19,7 +19,10 @@ export async function run() {
   await loaderScene.initializeLoader();
 
   const {
-    spritesheet: { animations, textures },
+    spritesheet: {
+      animations: { player, boss },
+      textures: { background, asteroid },
+    },
   } = loaderScene.getAssets();
 
   await SceneManager.changeScene(
@@ -27,9 +30,10 @@ export async function run() {
       app: SceneManager.app,
       viewWidth: SceneManager.width,
       viewHeight: SceneManager.height,
-      shipAnimation: animations.player,
-      bossAnimation: animations.boss,
-      backgroundTexture: textures.background,
+      shipAnimation: player,
+      bossAnimation: boss,
+      backgroundTexture: background,
+      asterodTexture: asteroid,
     })
   );
 }
