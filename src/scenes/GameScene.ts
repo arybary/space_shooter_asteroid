@@ -51,6 +51,8 @@ export class GameScene extends Container implements IScene {
     this.healthBar = new HealthBossBar({ boxWidth: this.health });
     this.setup(options);
     this.playerController = new PlayerController(this.player);
+    this.startModal.eventMode = 'dynamic'
+    this.startModal.on('click', this.startGame)
 
     setTimeout(() => {
       this.spawnEnemies();
@@ -111,7 +113,7 @@ export class GameScene extends Container implements IScene {
   }
 
   public handleUpdate(): void {
-    if (this.health === 0) {
+    if (this.health <= 0) {
       this.beginEndGame();
     }
     if (this.gameEnded) return;
@@ -254,8 +256,6 @@ export class GameScene extends Container implements IScene {
   }
 
   public startGame(): void {
-    this.startModal.visible = false;
-    this.clearContainers();
     this.gameEnded = false;
     this.player.isAlive = true;
     setTimeout(() => this.spawnEnemies(), 1000);
@@ -306,7 +306,7 @@ export class GameScene extends Container implements IScene {
     this.startModal.visible = true;
   }
 
-  private beginEndGame(): void {
+  public beginEndGame(): void {
     this.spawnParticles({
       count: this.player.width,
       posX: this.player.x,
@@ -318,18 +318,5 @@ export class GameScene extends Container implements IScene {
     setTimeout(() => this.endGame(), 2000);
   }
 
-  private clearContainers(): void {
-    while (this.projectilesPlayerContainer.children[0] != null) {
-      this.projectilesPlayerContainer.children[0].removeFromParent();
-    }
-    while (this.projectilesBossContainer.children[0] != null) {
-      this.projectilesBossContainer.children[0].removeFromParent();
-    }
-    while (this.enemiesContainer.children[0] != null) {
-      (this.enemiesContainer.children[0] as Enemy).removeFromParent();
-    }
-    while (this.particlesContainer.children[0] != null) {
-      this.particlesContainer.children[0].removeFromParent();
-    }
-  }
+
 }

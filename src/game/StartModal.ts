@@ -77,7 +77,7 @@ export class StartModal extends Container {
     this.addChild(this.pointsText)
 
     this.button = new Graphics()
-    this.button.interactive = true
+    this.button.eventMode = 'dynamic';
     this.button.cursor = 'pointer'
     this.addChild(this.button)
 

@@ -34,7 +34,8 @@ export abstract class SceneManager {
       resolution: window.devicePixelRatio ?? 1,
       width: SceneManager.width,
       height: SceneManager.height,
-      resizeTo: window
+      resizeTo: window,
+      eventMode: 'dynamic'
     })
     document.body.appendChild(app.view)
 
