@@ -29,11 +29,6 @@ interface IGameSceneOptions {
 export class GameScene extends Container implements IScene {
   private gameEnded: boolean = false;
   private countEnemy: number = 10;
-  private elapsedSpawnFrames: number = 0;
-  private elapsedShootFrames: number = 0;
-  private spawnFrame: number = Math.floor(Math.random() * 500 + 500);
-  private invaderShootFrame: number = Math.floor(Math.random() * 150);
-  private ids: number = 0;
   private bossFightStarted: boolean = false;
   private app!: Application;
   private background!: Sprite;
@@ -47,8 +42,8 @@ export class GameScene extends Container implements IScene {
   private enemiesContainer!: ParticleContainer;
   private startModal!: StartModal;
   private enemyTexture!: Texture;
-  private playerController!: PlayerController;
-  private bossController!: BossController;
+  public playerController!: PlayerController;
+  public bossController!: BossController;
 
   constructor(options: IGameSceneOptions) {
     super();
@@ -116,6 +111,9 @@ export class GameScene extends Container implements IScene {
   }
 
   public handleUpdate(): void {
+    if (this.health === 0) {
+      this.beginEndGame();
+    }
     if (this.gameEnded) return;
 
     const WIDTH = this.background.width;
@@ -132,7 +130,6 @@ export class GameScene extends Container implements IScene {
 
     if (this.countEnemy === 0) {
       this.bossFight();
-
     }
 
     const { x, y, width, height } = this;
@@ -180,7 +177,6 @@ export class GameScene extends Container implements IScene {
           });
           (enemy as Enemy).removeFromParent();
           this.countEnemy = this.enemiesContainer.children.length;
-
         }
       });
       (enemy as Enemy).update({ i, WIDTH, HEIGHT });
@@ -263,16 +259,14 @@ export class GameScene extends Container implements IScene {
     this.gameEnded = false;
     this.player.isAlive = true;
     setTimeout(() => this.spawnEnemies(), 1000);
-    this.elapsedShootFrames = 0;
-    this.elapsedSpawnFrames = 0;
   }
+
   public bossFight() {
     this.addChild(this.boss, this.healthBar);
     if (!this.bossFightStarted) {
-      this.bossController = new BossController(this.boss)
-      this.bossFightStarted = true
+      this.bossController = new BossController(this.boss);
+      this.bossFightStarted = true;
     }
-
 
     this.boss.updateMove();
     this.boss.updateState();

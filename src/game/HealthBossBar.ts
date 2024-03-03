@@ -60,9 +60,6 @@ export class HealthBossBar extends Container {
         fillBar.endFill()
     }
 
-    setBetween(between: number): void {
-
-    }
 
     updateHealth(health: number): void {
         if (health <= 0) {
