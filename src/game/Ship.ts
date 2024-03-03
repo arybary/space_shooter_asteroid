@@ -1,23 +1,27 @@
-import { AnimatedSprite, Resource, type Texture } from "pixi.js";
+import { AnimatedSprite, Application, Resource, type Texture } from "pixi.js";
+import { Projectile } from "./Projectile";
 
-export interface IPlayerOptions {
+export interface IShipOptions {
   shipAnimation: Texture<Resource>[];
+  app: Application;
 }
 
-export enum PlayerState {
+export enum ShipState {
   idle = "idle",
   skewLeft = "skewLeft",
   skewRight = "skewRight",
 }
 
-export class Player extends AnimatedSprite {
+export class Ship extends AnimatedSprite {
   public pointerXDown: number | null = null;
   public pointerYDown: number | null = null;
+  public app!: Application;
+  private ids: number = 0;
   static options = {
     scale: 0.5,
     angle: 0.3,
     moveSpeed: 6,
-    bulletSpeed: -10,
+    bulletSpeed: -6,
   };
 
   public velocity = {
@@ -25,19 +29,20 @@ export class Player extends AnimatedSprite {
     vy: 0,
   };
 
-  public heatingMax = 10;
+  public heatingMax = 200;
   public heating = 0;
   public isAlive = true;
 
-  public state!: PlayerState;
+  public state!: ShipState;
   scene: any;
-  constructor({ shipAnimation }: IPlayerOptions) {
-    super(shipAnimation);
+  constructor(opyions: IShipOptions) {
+    super(opyions.shipAnimation);
     this.animationSpeed = 0.05;
     this.play();
-    this.scale.set(Player.options.scale);
+    this.scale.set(Ship.options.scale);
     this.anchor.set(0.5, 0.5);
-    this.switchState(PlayerState.idle);
+    this.switchState(ShipState.idle);
+    this.app = opyions.app;
   }
 
   shoot(): boolean {
@@ -51,16 +56,16 @@ export class Player extends AnimatedSprite {
     return false;
   }
 
-  switchState(state: PlayerState): void {
+  switchState(state: ShipState): void {
     switch (state) {
-      case PlayerState.idle:
+      case ShipState.idle:
         this.rotation = 0;
         break;
-      case PlayerState.skewLeft:
-        this.rotation = -Player.options.angle;
+      case ShipState.skewLeft:
+        this.rotation = -Ship.options.angle;
         break;
-      case PlayerState.skewRight:
-        this.rotation = Player.options.angle;
+      case ShipState.skewRight:
+        this.rotation = Ship.options.angle;
         break;
     }
     this.state = state;
@@ -70,7 +75,7 @@ export class Player extends AnimatedSprite {
     return this.pointerXDown !== null && this.pointerYDown !== null;
   }
 
-  applyTopDirection(pressed: boolean): void {
+  applyShootDirection(pressed: boolean): void {
     if (!this.isAlive) {
       return;
     }
@@ -126,7 +131,7 @@ export class Player extends AnimatedSprite {
     }
     const {
       options: { moveSpeed },
-    } = Player;
+    } = Ship;
     const { pointerXDown, pointerYDown, velocity } = this;
     if (typeof pointerYDown === "number" && pointerYDown < 0) {
       velocity.vy = 1;
@@ -144,18 +149,53 @@ export class Player extends AnimatedSprite {
     }
   }
 
+  updateMove() {
+    const { velocity, position } = this;
+    const shipBounds = this.getBounds();
+    if (shipBounds.left + velocity.vx < 0) {
+      velocity.vx = 0;
+      position.x = shipBounds.width / 2;
+    } else if (shipBounds.right + velocity.vx > this.app.view.width) {
+      velocity.vx = 0;
+      position.x = this.app.view.width - shipBounds.width / 2;
+    } else {
+      position.x += velocity.vx;
+    }
+  }
+
   updateState(): void {
     if (!this.isAlive) {
       return;
     }
     if (this.velocity.vx > 0) {
-      this.switchState(PlayerState.skewRight);
+      this.switchState(ShipState.skewRight);
     } else if (this.velocity.vx < 0) {
-      console.log('D')
-      this.switchState(PlayerState.skewLeft);
+      this.switchState(ShipState.skewLeft);
     } else {
-      this.switchState(PlayerState.idle);
+      this.switchState(ShipState.idle);
     }
+  }
+
+  shipShoot(direction: "up" | "down"): Projectile {
+    let directionProjectile: number = Ship.options.bulletSpeed;
+    if (direction == "up") {
+      directionProjectile = Ship.options.bulletSpeed;
+    }
+    if (direction == "down") {
+      directionProjectile = -Ship.options.bulletSpeed;
+    }
+    const projectile = new Projectile({
+      id: ++this.ids,
+      app: this.app,
+      radius: 8,
+      fillColor: 0xffffff,
+      vx: 0,
+      vy: directionProjectile,
+    });
+    projectile.anchor.set(0.5, 0.5);
+    projectile.position.set(this.x, this.y);
+
+    return projectile;
   }
 
   setKilled(): void {

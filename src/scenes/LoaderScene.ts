@@ -21,7 +21,7 @@ export interface ILoaderSceneOptions {
 export class LoaderScene extends Container implements IScene {
   private readonly barOptions = {
     width: 350,
-    height: 20,
+    height: 50,
     fillColor: 0x008800,
     borderRadius: 5,
     borderThick: 5,

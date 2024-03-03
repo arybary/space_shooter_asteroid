@@ -30,7 +30,7 @@ export async function run() {
       app: SceneManager.app,
       viewWidth: SceneManager.width,
       viewHeight: SceneManager.height,
-      shipAnimation: player,
+      playerAnimation: player,
       bossAnimation: boss,
       backgroundTexture: background,
       asterodTexture: asteroid,

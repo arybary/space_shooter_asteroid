@@ -1,10 +1,10 @@
 import { FederatedPointerEvent } from "pixi.js";
-import { Player } from "../game/Player";
+import { Ship } from "./Ship";
 
 export class PlayerController {
-    private player: Player;
+    private player: Ship;
 
-    constructor(player: Player) {
+    constructor(player: Ship) {
         this.player = player;
         this.addEventListeners();
     }
@@ -20,7 +20,7 @@ export class PlayerController {
             case "ArrowUp":
             case "Space":
             case "ShiftLeft":
-                this.player.applyTopDirection(true);
+                this.player.applyShootDirection(true);
                 break;
             case "KeyA":
             case "ArrowLeft":
@@ -39,7 +39,7 @@ export class PlayerController {
             case "ArrowUp":
             case "Space":
             case "ShiftLeft":
-                this.player.applyTopDirection(false);
+                this.player.applyShootDirection(false);
                 break;
             case "KeyA":
             case "ArrowLeft":

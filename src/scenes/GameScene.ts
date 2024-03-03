@@ -4,22 +4,23 @@ import {
   Texture,
   Sprite,
   ParticleContainer,
-  AnimatedSprite,
 } from "pixi.js";
-import { Player } from "../game/Player";
+import { Ship } from "../game/Ship";
 import { Projectile } from "../game/Projectile";
 import { StartModal } from "../game/StartModal";
 import { Enemy } from "../game/Enemy";
 import { Collision } from "../game/Collision";
 import { PlayerController } from "../game/PlayerController";
+import { BossController } from "../game/BossController";
 import { IScene } from "./SceneManager";
 import { Particle } from "../game/Particle";
+import { HealthBossBar } from "../game/HealthBossBar";
 
-interface IShootingSceneOptions {
+interface IGameSceneOptions {
   app: Application;
   viewWidth: number;
   viewHeight: number;
-  shipAnimation: Texture[];
+  playerAnimation: Texture[];
   bossAnimation: Texture[];
   backgroundTexture: Texture;
   asterodTexture: Texture;
@@ -27,40 +28,60 @@ interface IShootingSceneOptions {
 
 export class GameScene extends Container implements IScene {
   private gameEnded: boolean = false;
+  private countEnemy: number = 10;
   private elapsedSpawnFrames: number = 0;
   private elapsedShootFrames: number = 0;
   private spawnFrame: number = Math.floor(Math.random() * 500 + 500);
   private invaderShootFrame: number = Math.floor(Math.random() * 150);
   private ids: number = 0;
+  private bossFightStarted: boolean = false;
   private app!: Application;
   private background!: Sprite;
-  private player!: Player;
-  private boss!: AnimatedSprite;
-  private projectilesContainer!: ParticleContainer;
+  private health: number = 100;
+  private healthBar: HealthBossBar;
+  private player!: Ship;
+  private boss!: Ship;
+  private projectilesPlayerContainer!: ParticleContainer;
+  private projectilesBossContainer!: ParticleContainer;
   private particlesContainer!: ParticleContainer;
   private enemiesContainer!: ParticleContainer;
   private startModal!: StartModal;
   private enemyTexture!: Texture;
   private playerController!: PlayerController;
+  private bossController!: BossController;
 
-  constructor(options: IShootingSceneOptions) {
+  constructor(options: IGameSceneOptions) {
     super();
     this.app = options.app;
+    this.healthBar = new HealthBossBar({ boxWidth: this.health });
     this.setup(options);
     this.playerController = new PlayerController(this.player);
+
     setTimeout(() => {
       this.spawnEnemies();
-    });
+    }, 500);
   }
 
-  private setup(options: IShootingSceneOptions): void {
+  private setup(options: IGameSceneOptions): void {
     this.background = new Sprite(options.backgroundTexture);
-    this.player = new Player({ shipAnimation: options.shipAnimation });
-    this.boss = new AnimatedSprite(options.bossAnimation);
+    this.player = new Ship({
+      app: this.app,
+      shipAnimation: options.playerAnimation,
+    });
+    this.boss = new Ship({
+      app: this.app,
+      shipAnimation: options.bossAnimation,
+    });
+
     this.enemyTexture = options.asterodTexture;
 
     this.addChild(this.background, this.player);
-    this.projectilesContainer = new ParticleContainer(2000, {
+    this.projectilesPlayerContainer = new ParticleContainer(2000, {
+      scale: true,
+      position: true,
+      tint: true,
+    });
+    this.projectilesBossContainer = new ParticleContainer(2000, {
       scale: true,
       position: true,
       tint: true,
@@ -72,7 +93,8 @@ export class GameScene extends Container implements IScene {
     this.enemiesContainer = new ParticleContainer(500, { position: true });
 
     this.addChild(
-      this.projectilesContainer,
+      this.projectilesPlayerContainer,
+      this.projectilesBossContainer,
       this.particlesContainer,
       this.enemiesContainer
     );
@@ -86,7 +108,7 @@ export class GameScene extends Container implements IScene {
   }
 
   private spawnEnemies(): void {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < this.countEnemy; i++) {
       const enemy = new Enemy({ texture: this.enemyTexture });
       enemy.position.set(i, i);
       this.enemiesContainer.addChild(enemy);
@@ -99,25 +121,20 @@ export class GameScene extends Container implements IScene {
     const WIDTH = this.background.width;
     const HEIGHT = this.background.height;
 
-    // Update player velocity
     this.player.updateVelocity();
-    const { velocity, position } = this.player;
-    if (velocity.vy > 0) this.playerShoot();
 
-    // Check player boundaries
-    const playerBounds = this.player.getBounds();
-    if (playerBounds.left + velocity.vx < this.background.x) {
-      velocity.vx = 0;
-      position.x = this.background.x + playerBounds.width / 2;
-    } else if (playerBounds.right + velocity.vx > WIDTH) {
-      velocity.vx = 0;
-      position.x = WIDTH - playerBounds.width / 2;
-    } else {
-      position.x += velocity.vx;
-    }
+    if (this.player.velocity.vy > 0)
+      this.projectilesPlayerContainer.addChild(this.player.shipShoot("up"));
+
+    this.player.updateMove();
+
     this.player.updateState();
 
-    // Update and check particles and projectiles
+    if (this.countEnemy === 0) {
+      this.bossFight();
+
+    }
+
     const { x, y, width, height } = this;
     this.updateContainer(this.particlesContainer, {
       left: x,
@@ -125,14 +142,13 @@ export class GameScene extends Container implements IScene {
       right: x + width,
       bottom: y + height,
     });
-    this.updateContainer(this.projectilesContainer, {
+    this.updateContainer(this.projectilesPlayerContainer, {
       left: x,
       top: y,
       right: x + width,
       bottom: y + height,
     });
 
-    // Check collisions between enemies and projectiles
     this.checkCollisions(WIDTH, HEIGHT);
   }
 
@@ -152,7 +168,7 @@ export class GameScene extends Container implements IScene {
   private checkCollisions(WIDTH: number, HEIGHT: number): void {
     this.enemiesContainer.children.forEach((enemy, i) => {
       const enemyBounds = (enemy as Enemy).getBounds();
-      this.projectilesContainer.children.forEach((child) => {
+      this.projectilesPlayerContainer.children.forEach((child) => {
         const projectileBounds = (child as Projectile).getBounds();
         if (Collision.checkCollision(enemyBounds, projectileBounds) > 0) {
           (child as Projectile).removeFromParent();
@@ -163,9 +179,8 @@ export class GameScene extends Container implements IScene {
             fillColor: 0xbaa0de,
           });
           (enemy as Enemy).removeFromParent();
-          if (this.enemiesContainer.children.length === 0) {
-            this.addChild(this.boss);
-          }
+          this.countEnemy = this.enemiesContainer.children.length;
+
         }
       });
       (enemy as Enemy).update({ i, WIDTH, HEIGHT });
@@ -198,29 +213,6 @@ export class GameScene extends Container implements IScene {
     }
   }
 
-  private playerShoot(): void {
-    if (this.gameEnded || !this.player.shoot()) return;
-
-    const projectile = new Projectile({
-      id: ++this.ids,
-      app: this.app,
-      radius: 8,
-      fillColor: 0xffffff,
-      vx: 0,
-      vy: Player.options.bulletSpeed,
-    });
-    projectile.anchor.set(0.5, 0.5);
-    projectile.position.set(this.player.x, this.player.y);
-    this.projectilesContainer.addChild(projectile);
-
-    const trailProjectiles = projectile.BuildTrail();
-    trailProjectiles.forEach((p) => {
-      p.anchor.set(0.5, 0.5);
-      p.position.set(this.player.x, this.player.y);
-      this.projectilesContainer.addChild(p);
-    });
-  }
-
   public handleResize(options: {
     viewWidth: number;
     viewHeight: number;
@@ -238,6 +230,7 @@ export class GameScene extends Container implements IScene {
     viewHeight: number;
   }): void {
     this.player.position.set(viewWidth / 2, viewHeight - this.player.height);
+    this.boss.position.set(viewWidth / 2, this.boss.height);
   }
 
   private centerModal({
@@ -269,9 +262,49 @@ export class GameScene extends Container implements IScene {
     this.clearContainers();
     this.gameEnded = false;
     this.player.isAlive = true;
-    setTimeout(() => this.spawnEnemies());
+    setTimeout(() => this.spawnEnemies(), 1000);
     this.elapsedShootFrames = 0;
     this.elapsedSpawnFrames = 0;
+  }
+  public bossFight() {
+    this.addChild(this.boss, this.healthBar);
+    if (!this.bossFightStarted) {
+      this.bossController = new BossController(this.boss)
+      this.bossFightStarted = true
+    }
+
+
+    this.boss.updateMove();
+    this.boss.updateState();
+    this.boss.updateVelocity();
+
+    if (this.boss.velocity.vy > 0)
+      this.projectilesBossContainer.addChild(this.boss.shipShoot("down"));
+
+    const { x, y, width, height } = this;
+    this.updateContainer(this.projectilesBossContainer, {
+      left: x,
+      top: y,
+      right: x + width,
+      bottom: y + height,
+    });
+
+    this.projectilesPlayerContainer.children.forEach((child) => {
+      const projectileBounds = (child as Projectile).getBounds();
+      const bossBounds = this.boss.getBounds();
+      if (Collision.checkCollision(bossBounds, projectileBounds) > 0) {
+        (child as Projectile).removeFromParent();
+        console.log("gjg");
+        this.health -= 25;
+        this.healthBar.updateHealth(this.health);
+        this.spawnParticles({
+          count: this.boss.width,
+          posX: this.boss.x,
+          posY: this.boss.y,
+          fillColor: 0xbaa0de,
+        });
+      }
+    });
   }
 
   public endGame(): void {
@@ -292,8 +325,11 @@ export class GameScene extends Container implements IScene {
   }
 
   private clearContainers(): void {
-    while (this.projectilesContainer.children[0] != null) {
-      this.projectilesContainer.children[0].removeFromParent();
+    while (this.projectilesPlayerContainer.children[0] != null) {
+      this.projectilesPlayerContainer.children[0].removeFromParent();
+    }
+    while (this.projectilesBossContainer.children[0] != null) {
+      this.projectilesBossContainer.children[0].removeFromParent();
     }
     while (this.enemiesContainer.children[0] != null) {
       (this.enemiesContainer.children[0] as Enemy).removeFromParent();
