@@ -1,4 +1,4 @@
-import { AnimatedSprite, Application, Resource, type Texture } from "pixi.js";
+import { AnimatedSprite, Application, type Texture } from "pixi.js";
 import { Projectile } from "./Projectile";
 
 export interface IShipOptions {
