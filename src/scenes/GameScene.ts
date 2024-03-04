@@ -7,7 +7,7 @@ import {
 } from "pixi.js";
 import { Ship } from "../game/Ship";
 import { Projectile } from "../game/Projectile";
-import { StartModal } from "../game/StartModal";
+
 import { Enemy } from "../game/Enemy";
 import { Collision } from "../game/Collision";
 import { PlayerController } from "../game/PlayerController";
@@ -15,6 +15,8 @@ import { BossController } from "../game/BossController";
 import { IScene } from "./SceneManager";
 import { Particle } from "../game/Particle";
 import { HealthBossBar } from "../game/HealthBossBar";
+import { MessageModal } from "../game/MessageModal";
+import { StatusBar } from "../game/StatusBar";
 
 interface IGameSceneOptions {
   app: Application;
@@ -28,43 +30,45 @@ interface IGameSceneOptions {
 
 export class GameScene extends Container implements IScene {
   private gameEnded: boolean = false;
-  private countEnemy: number = 10;
+  private countEnemy: number = 5;
+  private projectile: number = 10;
+  private time: number = 60000;
   private bossFightStarted: boolean = false;
   private app!: Application;
   private background!: Sprite;
   private health: number = 100;
-  private healthBar: HealthBossBar;
+  private healthBar!: HealthBossBar;
   private player!: Ship;
   private boss!: Ship;
   private projectilesPlayerContainer!: ParticleContainer;
   private projectilesBossContainer!: ParticleContainer;
   private particlesContainer!: ParticleContainer;
   private enemiesContainer!: ParticleContainer;
-  private startModal!: StartModal;
+  private messageModal!: MessageModal;
+  public statusBar!: StatusBar;
   private enemyTexture!: Texture;
   public playerController!: PlayerController;
   public bossController!: BossController;
   public timeout!: number | null;
+  public startBossFight: boolean = true;
 
   constructor(options: IGameSceneOptions) {
     super();
     this.app = options.app;
-    this.healthBar = new HealthBossBar({ boxWidth: this.health });
+
     this.setup(options);
     this.playerController = new PlayerController({
       player: this.player,
       game: this,
     });
-    this.startModal.eventMode = "dynamic";
-    this.startModal.on("click", this.startGame);
 
-    setTimeout(() => {
-      this.spawnEnemies();
-    }, 500);
+
   }
 
   private setup(options: IGameSceneOptions): void {
     this.background = new Sprite(options.backgroundTexture);
+    this.statusBar = new StatusBar();
+
     this.player = new Ship({
       app: this.app,
       shipAnimation: options.playerAnimation,
@@ -73,10 +77,10 @@ export class GameScene extends Container implements IScene {
       app: this.app,
       shipAnimation: options.bossAnimation,
     });
-
+    this.healthBar = new HealthBossBar({ boxWidth: this.health });
     this.enemyTexture = options.asterodTexture;
 
-    this.addChild(this.background, this.player);
+    this.addChild(this.background, this.player, this.statusBar);
     this.projectilesPlayerContainer = new ParticleContainer(2000, {
       scale: true,
       position: true,
@@ -99,29 +103,54 @@ export class GameScene extends Container implements IScene {
       this.particlesContainer,
       this.enemiesContainer
     );
+    setTimeout(() => {
+      this.spawnEnemies();
+    }, 500);
 
-    this.startModal = new StartModal({
+    this.messageModal = new MessageModal({
       viewWidth: options.viewWidth,
       viewHeight: options.viewHeight,
     });
-    this.startModal.visible = false;
-    this.addChild(this.startModal);
+    this.messageModal.visible = false;
+    this.addChild(this.messageModal);
+    this.messageModal.eventMode = "dynamic";
+    this.messageModal.on("click", () => this.startGame());
   }
 
   private spawnEnemies(): void {
     for (let i = 0; i < this.countEnemy; i++) {
       const enemy = new Enemy({ texture: this.enemyTexture });
-      enemy.position.set(i, i);
+
       this.enemiesContainer.addChild(enemy);
     }
   }
 
-  public handleUpdate(): void {
-    if (this.health <= 0) {
-      this.beginEndGame();
-    }
+  public handleUpdate(deltaMS: number): void {
     if (this.gameEnded) return;
+    if (this.health <= 0) {
+      this.beginEndGame("Win");
+    }
+    if (this.time <= 0) {
+      this.beginEndGame("Lose");
+    }
+    if (this.projectile === 0) {
+      if (this.countEnemy > 0) {
+        this.beginEndGame("Lose");
+      }
+    }
 
+    this.time -= deltaMS;
+    this.statusBar.updateTime(this.time);
+    this.statusBar.updateProjectile(this.projectile);
+    if (this.startBossFight && this.countEnemy === 0) {
+      this.startBossFight = false;
+      this.projectile = 10;
+      this.time = 60000;
+    }
+    this.statusBar.updateProjectile(this.projectile);
+    if (this.countEnemy === 0) {
+      this.bossFight();
+    }
     const WIDTH = this.background.width;
     const HEIGHT = this.background.height;
 
@@ -132,15 +161,13 @@ export class GameScene extends Container implements IScene {
       this.timeout = setTimeout(() => {
         this.timeout = null;
       }, 1000);
+
+      this.projectile -= 1;
     }
 
     this.player.updateMove();
 
     this.player.updateState();
-
-    if (this.countEnemy === 0) {
-      this.bossFight();
-    }
 
     const { x, y, width, height } = this;
     this.updateContainer(this.particlesContainer, {
@@ -189,7 +216,11 @@ export class GameScene extends Container implements IScene {
           this.countEnemy = this.enemiesContainer.children.length;
         }
       });
-      (enemy as Enemy).update({ i, WIDTH, HEIGHT });
+      (enemy as Enemy).update({
+        i,
+        WIDTH,
+        HEIGHT: HEIGHT - this.player.height,
+      });
     });
   }
 
@@ -235,8 +266,12 @@ export class GameScene extends Container implements IScene {
     viewWidth: number;
     viewHeight: number;
   }): void {
-    this.player.position.set(viewWidth / 2, viewHeight - this.player.height);
+    this.player.position.set(
+      viewWidth / 2,
+      viewHeight - this.player.height / 2
+    );
     this.boss.position.set(viewWidth / 2, this.boss.height);
+    this.statusBar.position.set(viewWidth - this.statusBar.width * 2, 0);
   }
 
   private centerModal({
@@ -246,9 +281,9 @@ export class GameScene extends Container implements IScene {
     viewWidth: number;
     viewHeight: number;
   }): void {
-    this.startModal.position.set(
-      viewWidth / 2 - this.startModal.boxOptions.width / 2,
-      viewHeight / 2 - this.startModal.boxOptions.height / 2
+    this.messageModal.position.set(
+      viewWidth / 2 - this.messageModal.width / 2,
+      viewHeight / 2 - this.messageModal.height / 2
     );
   }
 
@@ -264,6 +299,14 @@ export class GameScene extends Container implements IScene {
   }
 
   public startGame(): void {
+    this.projectile = 10;
+    this.time = 60000;
+    this.health = 100;
+    this.gameEnded = false;
+    this.player.isAlive = true;
+
+    this.messageModal.visible = false;
+
     this.gameEnded = false;
     this.player.isAlive = true;
     setTimeout(() => this.spawnEnemies(), 1000);
@@ -271,6 +314,7 @@ export class GameScene extends Container implements IScene {
 
   public bossFight() {
     this.addChild(this.boss, this.healthBar);
+
     if (!this.bossFightStarted) {
       this.bossController = new BossController(this.boss);
       this.bossFightStarted = true;
@@ -300,7 +344,6 @@ export class GameScene extends Container implements IScene {
       const bossBounds = this.boss.getBounds();
       if (Collision.checkCollision(bossBounds, projectileBounds) > 0) {
         (child as Projectile).removeFromParent();
-        console.log("gjg");
         this.health -= 25;
         this.healthBar.updateHealth(this.health);
         this.spawnParticles({
@@ -309,23 +352,29 @@ export class GameScene extends Container implements IScene {
           posY: this.boss.y,
           fillColor: 0xbaa0de,
         });
+        if (this.health <= 0) {
+          this.boss.removeFromParent();
+          this.healthBar.removeFromParent();
+        }
       }
     });
   }
 
   public endGame(): void {
     this.gameEnded = true;
-    this.startModal.visible = true;
+    this.messageModal.visible = true;
   }
 
-  public beginEndGame(): void {
+  public beginEndGame(message: string): void {
     this.spawnParticles({
       count: this.player.width,
       posX: this.player.x,
       posY: this.player.y,
       fillColor: 0xffffff,
     });
+
     this.player.setKilled();
+    this.messageModal.setButtonText(`You ${message}`);
 
     setTimeout(() => this.endGame(), 2000);
   }

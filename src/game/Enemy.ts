@@ -17,6 +17,8 @@ export class Enemy extends Sprite {
     this.scale.set(Enemy.options.scale);
     this.anchor.set(0.5, 0.5);
 
+
+
     this.vx = Enemy.options.moveSpeed;
     this.vy = Enemy.options.moveSpeed;
   }
@@ -33,13 +35,13 @@ export class Enemy extends Sprite {
     this.x += Math.cos(i) * this.vx;
     this.y += Math.sin(i) * this.vy;
 
-    if (this.x < 0 || this.x > WIDTH) {
+    if (this.x < 0 || this.x > WIDTH - this.width / 2) {
       this.vx *= -1;
     }
 
-    if (this.y <= 0 || this.y > HEIGHT) {
+    if (this.y < 0 || this.y > HEIGHT) {
       this.vy *= -1;
     }
-    if (this.vy === 0) { this.vx = 6 }
+
   }
 }

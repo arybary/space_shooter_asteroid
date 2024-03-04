@@ -103,8 +103,8 @@ export class Ship extends AnimatedSprite {
       this.pointerYDown = null;
     } else {
       if (this.isPointerDown()) {
-        this.pointerXDown = x - this.x;
-        this.pointerYDown = y - this.y;
+        this.pointerXDown = x;
+        this.pointerYDown = y;
       }
     }
   }
@@ -157,6 +157,7 @@ export class Ship extends AnimatedSprite {
     } else if (this.velocity.vx < 0) {
       this.switchState(ShipState.skewLeft);
     } else {
+      this.velocity.vx 
       this.switchState(ShipState.idle);
     }
   }
@@ -174,7 +175,7 @@ export class Ship extends AnimatedSprite {
       app: this.app,
       radius: 8,
       fillColor: 0xffffff,
-      vx: 0,
+      vx: Ship.options.angle,
       vy: directionProjectile,
     });
     projectile.anchor.set(0.5, 0.5);
