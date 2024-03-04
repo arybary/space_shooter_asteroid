@@ -44,15 +44,19 @@ export class GameScene extends Container implements IScene {
   private enemyTexture!: Texture;
   public playerController!: PlayerController;
   public bossController!: BossController;
+  public timeout!: number | null;
 
   constructor(options: IGameSceneOptions) {
     super();
     this.app = options.app;
     this.healthBar = new HealthBossBar({ boxWidth: this.health });
     this.setup(options);
-    this.playerController = new PlayerController(this.player);
-    this.startModal.eventMode = 'dynamic'
-    this.startModal.on('click', this.startGame)
+    this.playerController = new PlayerController({
+      player: this.player,
+      game: this,
+    });
+    this.startModal.eventMode = "dynamic";
+    this.startModal.on("click", this.startGame);
 
     setTimeout(() => {
       this.spawnEnemies();
@@ -123,8 +127,12 @@ export class GameScene extends Container implements IScene {
 
     this.player.updateVelocity();
 
-    if (this.player.velocity.vy > 0)
+    if (!this.timeout && this.player.velocity.vy > 0) {
       this.projectilesPlayerContainer.addChild(this.player.shipShoot("up"));
+      this.timeout = setTimeout(() => {
+        this.timeout = null;
+      }, 1000);
+    }
 
     this.player.updateMove();
 
@@ -272,8 +280,12 @@ export class GameScene extends Container implements IScene {
     this.boss.updateState();
     this.boss.updateVelocity();
 
-    if (this.boss.velocity.vy > 0)
+    if (!this.timeout && this.boss.velocity.vy > 0) {
       this.projectilesBossContainer.addChild(this.boss.shipShoot("down"));
+      this.timeout = setTimeout(() => {
+        this.timeout = null;
+      }, 1000);
+    }
 
     const { x, y, width, height } = this;
     this.updateContainer(this.projectilesBossContainer, {
@@ -317,6 +329,4 @@ export class GameScene extends Container implements IScene {
 
     setTimeout(() => this.endGame(), 2000);
   }
-
-
 }

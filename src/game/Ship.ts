@@ -2,7 +2,7 @@ import { AnimatedSprite, Application, Resource, type Texture } from "pixi.js";
 import { Projectile } from "./Projectile";
 
 export interface IShipOptions {
-  shipAnimation: Texture<Resource>[];
+  shipAnimation: Texture[];
   app: Application;
 }
 
@@ -29,12 +29,10 @@ export class Ship extends AnimatedSprite {
     vy: 0,
   };
 
-  public heatingMax = 200;
-  public heating = 0;
   public isAlive = true;
 
   public state!: ShipState;
-  scene: any;
+
   constructor(opyions: IShipOptions) {
     super(opyions.shipAnimation);
     this.animationSpeed = 0.05;
@@ -43,17 +41,6 @@ export class Ship extends AnimatedSprite {
     this.anchor.set(0.5, 0.5);
     this.switchState(ShipState.idle);
     this.app = opyions.app;
-  }
-
-  shoot(): boolean {
-    if (!this.isAlive) {
-      return false;
-    }
-    if (this.heating < this.heatingMax) {
-      this.heating += 15;
-      return true;
-    }
-    return false;
   }
 
   switchState(state: ShipState): void {
@@ -126,9 +113,7 @@ export class Ship extends AnimatedSprite {
     if (!this.isAlive) {
       return;
     }
-    if (this.heating > 0) {
-      this.heating--;
-    }
+
     const {
       options: { moveSpeed },
     } = Ship;
@@ -204,6 +189,5 @@ export class Ship extends AnimatedSprite {
     this.pointerYDown = null;
     this.velocity.vx = 0;
     this.velocity.vy = 0;
-    this.heating = 0;
   }
 }

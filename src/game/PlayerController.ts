@@ -1,18 +1,30 @@
 import { FederatedPointerEvent } from "pixi.js";
 import { Ship } from "./Ship";
+import { GameScene } from "../scenes/GameScene";
+
+interface IPlayerController {
+    game: GameScene;
+    player: Ship;
+}
 
 export class PlayerController {
     private player: Ship;
+    private game: GameScene;
 
-    constructor(player: Ship) {
+    constructor({ game, player }: IPlayerController) {
+        this.game = game;
         this.player = player;
         this.addEventListeners();
     }
 
     private addEventListeners(): void {
-        window.addEventListener("keydown", this.handleKeyDown);
-        window.addEventListener("keyup", this.handleKeyUp);
-    }
+      this.game.eventMode = "dynamic";
+      this.game.on("pointerdown", this.handlePlayerStartMove);
+      this.game.on("pointermove", this.handlePlayerKeepMove);
+      this.game.on("pointerup", this.handlePlayerStopMove);
+      window.addEventListener("keydown", this.handleKeyDown);
+      window.addEventListener("keyup", this.handleKeyUp);
+  }
 
     private handleKeyDown = (e: KeyboardEvent): void => {
         switch (e.code) {
@@ -52,7 +64,10 @@ export class PlayerController {
         }
     };
 
-    public handlePlayerMove(pressed: boolean | undefined, e: FederatedPointerEvent): void {
+    public handlePlayerMove(
+        pressed: boolean | undefined,
+        e: FederatedPointerEvent
+    ): void {
         const point = this.player.toLocal(e.global);
         this.player.handleMove(pressed, point.x, point.y);
     }

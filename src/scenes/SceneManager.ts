@@ -1,11 +1,8 @@
-import { Application, Container, type DisplayObject } from 'pixi.js'
+import { Application, Container, type DisplayObject } from "pixi.js";
 
 export interface IScene extends DisplayObject {
-  handleUpdate: (deltaMS: number) => void
-  handleResize: (options: {
-    viewWidth: number,
-    viewHeight: number,
-  }) => void
+  handleUpdate: (deltaMS: number) => void;
+  handleResize: (options: { viewWidth: number; viewHeight: number }) => void;
 }
 
 class DefaultScene extends Container implements IScene {
@@ -15,17 +12,17 @@ class DefaultScene extends Container implements IScene {
 
 export abstract class SceneManager {
   private constructor() { }
-  public static app: Application<HTMLCanvasElement>
-  private static currentScene: IScene = new DefaultScene()
+  public static app: Application<HTMLCanvasElement>;
+  private static currentScene: IScene = new DefaultScene();
   private static resizeTimeoutId: number;
-  private static readonly resizeTimeout = 300
+  private static readonly resizeTimeout = 300;
 
   public static get width(): number {
-    return window.innerWidth
+    return window.innerWidth;
   }
 
   public static get height(): number {
-    return window.innerHeight
+    return window.innerHeight;
   }
 
   public static async initialize(): Promise<void> {
@@ -35,55 +32,53 @@ export abstract class SceneManager {
       width: SceneManager.width,
       height: SceneManager.height,
       resizeTo: window,
-      eventMode: 'dynamic'
-    })
-    document.body.appendChild(app.view)
+    });
+    document.body.appendChild(app.view);
 
+    SceneManager.app = app;
 
-    SceneManager.app = app
-
-    SceneManager.setupEventLesteners()
+    SceneManager.setupEventLesteners();
   }
 
   static setupEventLesteners(): void {
-    window.addEventListener('resize', SceneManager.resizeDeBounce)
-    SceneManager.app.ticker.add(SceneManager.updateHandler)
+    window.addEventListener("resize", SceneManager.resizeDeBounce);
+    SceneManager.app.ticker.add(SceneManager.updateHandler);
   }
 
   public static async changeScene(newScene: IScene): Promise<void> {
-    SceneManager.app.stage.removeChild(SceneManager.currentScene)
-    SceneManager.currentScene.destroy()
+    SceneManager.app.stage.removeChild(SceneManager.currentScene);
+    SceneManager.currentScene.destroy();
 
-    SceneManager.currentScene = newScene
-    SceneManager.app.stage.addChild(SceneManager.currentScene)
+    SceneManager.currentScene = newScene;
+    SceneManager.app.stage.addChild(SceneManager.currentScene);
 
-    SceneManager.resizeHandler()
+    SceneManager.resizeHandler();
   }
 
   private static resizeDeBounce(): void {
-    SceneManager.cancelScheduledResizeHandler()
-    SceneManager.scheduleResizeHandler()
+    SceneManager.cancelScheduledResizeHandler();
+    SceneManager.scheduleResizeHandler();
   }
 
   private static cancelScheduledResizeHandler(): void {
-    clearTimeout(SceneManager.resizeTimeoutId)
+    clearTimeout(SceneManager.resizeTimeoutId);
   }
 
   private static scheduleResizeHandler(): void {
     SceneManager.resizeTimeoutId = setTimeout(() => {
-      SceneManager.cancelScheduledResizeHandler()
-      SceneManager.resizeHandler()
-    }, SceneManager.resizeTimeout)
+      SceneManager.cancelScheduledResizeHandler();
+      SceneManager.resizeHandler();
+    }, SceneManager.resizeTimeout);
   }
 
   public static resizeHandler(): void {
     SceneManager.currentScene.handleResize({
       viewWidth: SceneManager.width,
-      viewHeight: SceneManager.height
-    })
+      viewHeight: SceneManager.height,
+    });
   }
 
   public static updateHandler(): void {
-    SceneManager.currentScene.handleUpdate(SceneManager.app.ticker.deltaMS)
+    SceneManager.currentScene.handleUpdate(SceneManager.app.ticker.deltaMS);
   }
 }
