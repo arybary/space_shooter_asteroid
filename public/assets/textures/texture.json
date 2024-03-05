@@ -1,163 +1,169 @@
 {
-    "frames": {
-        "background": {
-            "frame": {
-                "x": 0,
-                "y": 0,
-                "w": 1024,
-                "h": 1024
-            },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": {
-                "x": 0,
-                "y": 0,
-                "w": 1024,
-                "h": 1024
-            },
-            "sourceSize": {
-                "w": 1024,
-                "h": 1024
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        },
-        "player_1": {
-            "frame": {
-                "x": 0,
-                "y": 1024,
-                "w": 156,
-                "h": 249
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 21,
-                "y": 2,
-                "w": 156,
-                "h": 249
-            },
-            "sourceSize": {
-                "w": 200,
-                "h": 251
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        },
-        "player_2": {
-            "frame": {
-                "x": 0,
-                "y": 1273,
-                "w": 156,
-                "h": 249
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 21,
-                "y": 2,
-                "w": 156,
-                "h": 249
-            },
-            "sourceSize": {
-                "w": 200,
-                "h": 251
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        },
-        "asteroid": {
-            "frame": {
-                "x": 0,
-                "y": 1522,
-                "w": 193,
-                "h": 201
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 7,
-                "y": 0,
-                "w": 193,
-                "h": 201
-            },
-            "sourceSize": {
-                "w": 200,
-                "h": 202
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        },
-        "boss_2": {
-            "frame": {
-                "x": 0,
-                "y": 1723,
-                "w": 195,
-                "h": 194
-            },
-            "rotated": true,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 0,
-                "y": 6,
-                "w": 195,
-                "h": 194
-            },
-            "sourceSize": {
-                "w": 200,
-                "h": 200
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        },
-        "boss_1": {
-            "frame": {
-                "x": 156,
-                "y": 1024,
-                "w": 192,
-                "h": 194
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 0,
-                "y": 6,
-                "w": 192,
-                "h": 194
-            },
-            "sourceSize": {
-                "w": 200,
-                "h": 200
-            },
-            "pivot": {
-                "x": 0.5,
-                "y": 0.5
-            }
-        }
+  "frames": {
+    "background": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 1024,
+        "h": 1024
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 1024
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 1024
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
     },
-    "meta": {
-        "app": "http://free-tex-packer.com",
-        "version": "0.6.7",
-        "image": "texture.png",
-        "format": "RGBA8888",
-        "size": {
-            "w": 1024,
-            "h": 1918
-        },
-        "scale": 1
+    "player_1": {
+      "frame": {
+        "x": 2,
+        "y": 1030,
+        "w": 156,
+        "h": 249
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 21,
+        "y": 2,
+        "w": 156,
+        "h": 249
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 251
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
     },
-    "animations": {
-        "player": ["player_1", "player_2"],
-        "boss": ["boss_1", "boss_2"]
+    "player_2": {
+      "frame": {
+        "x": 255,
+        "y": 1030,
+        "w": 156,
+        "h": 249
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 21,
+        "y": 2,
+        "w": 156,
+        "h": 249
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 251
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "asteroid": {
+      "frame": {
+        "x": 508,
+        "y": 1030,
+        "w": 193,
+        "h": 201
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 7,
+        "y": 0,
+        "w": 193,
+        "h": 201
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 202
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "boss_2": {
+      "frame": {
+        "x": 2,
+        "y": 1190,
+        "w": 195,
+        "h": 194
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 6,
+        "w": 195,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 200
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "boss_1": {
+      "frame": {
+        "x": 200,
+        "y": 1190,
+        "w": 192,
+        "h": 194
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 6,
+        "w": 192,
+        "h": 194
+      },
+      "sourceSize": {
+        "w": 200,
+        "h": 200
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
     }
+  },
+  "animations": {
+    "player": [
+      "player_1",
+      "player_2"
+    ],
+    "boss": [
+      "boss_1",
+      "boss_2"
+    ]
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1028,
+      "h": 1387
+    },
+    "scale": 1
+  }
 }

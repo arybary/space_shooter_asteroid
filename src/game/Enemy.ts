@@ -17,31 +17,41 @@ export class Enemy extends Sprite {
     this.scale.set(Enemy.options.scale);
     this.anchor.set(0.5, 0.5);
 
-
-
     this.vx = Enemy.options.moveSpeed;
     this.vy = Enemy.options.moveSpeed;
   }
 
   update({
     i,
-    WIDTH,
-    HEIGHT,
+    width,
+    height,
   }: {
     i: number;
-    WIDTH: number;
-    HEIGHT: number;
+      width: number;
+      height: number;
   }): void {
+    const halfWidth = this.width / 2;
+    const halfHeight = this.height / 2;
+
+    // Обновление позиции
     this.x += Math.cos(i) * this.vx;
     this.y += Math.sin(i) * this.vy;
 
-    if (this.x < 0 || this.x > WIDTH - this.width / 2) {
-      this.vx *= -1;
+    // Проверка выхода за границы экрана и корректировка позиции
+    if (this.x < halfWidth) {
+      this.x = halfWidth;
+      this.vx *= -1; // изменяем направление
+    } else if (this.x > width - halfWidth) {
+      this.x = width - halfWidth;
+      this.vx *= -1; // изменяем направление
     }
 
-    if (this.y < 0 || this.y > HEIGHT) {
-      this.vy *= -1;
+    if (this.y < halfHeight) {
+      this.y = halfHeight;
+      this.vy *= -1; // изменяем направление
+    } else if (this.y > height - halfHeight) {
+      this.y = height - halfHeight;
+      this.vy *= -1; // изменяем направление
     }
-
   }
 }
