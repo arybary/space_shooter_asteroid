@@ -16,7 +16,6 @@ import { Particle } from "../game/Particle";
 import { HealthBossBar } from "../game/HealthBossBar";
 import { MessageModal } from "../game/MessageModal";
 import { StatusBar } from "../game/StatusBar";
-import { COLOR_DARK_GRAY, COLOR_GREEN } from "../utils/constants";
 
 interface IGameSceneOptions {
   app: Application;
@@ -60,6 +59,7 @@ export class GameScene extends Container implements IScene {
       player: this.player,
       game: this,
     });
+    this.messageModal.on("click", () => { this.startGame(); this.setup(options) })
   }
 
   private setup(options: IGameSceneOptions): void {
@@ -112,7 +112,7 @@ export class GameScene extends Container implements IScene {
     this.messageModal.visible = false;
     this.addChild(this.messageModal);
     this.messageModal.eventMode = "auto";
-    this.messageModal.on("click", () => this.startGame());
+    ;
   }
 
   public handleResize(options: {
@@ -171,7 +171,8 @@ export class GameScene extends Container implements IScene {
     }
 
 
-    if (this.countEnemy > 0 && this.projectile <= 0) {
+
+    if (this.health > 0 && this.projectile <= 0) {
       this.beginEndGame("Lose");
     }
 
@@ -291,8 +292,12 @@ export class GameScene extends Container implements IScene {
             fillColor: 0xbaa0de,
           });
           (enemy as Enemy).removeFromParent();
-          this.countEnemy = this.enemiesContainer.children.length;
+          this.countEnemy -= 1;
           this.projectile -= 1;
+          console.log(this.countEnemy, this.projectile)
+          if (this.countEnemy > 0 && this.projectile <= 0) {
+            this.beginEndGame("Lose");
+          }
         }
       });
     });
@@ -303,9 +308,9 @@ export class GameScene extends Container implements IScene {
       const projectileBounds = (child as Projectile).getBounds();
       const bossBounds = this.boss.getBounds();
       if (Collision.checkCollision(bossBounds, projectileBounds) > 0) {
-        (child as Projectile).removeFromParent();
-        this.projectile -= 1;
         this.health -= 1;
+        (child as Projectile).removeFromParent();   
+        this.projectile -= 1;
         this.healthBar.updateHealth(this.health);
         this.spawnParticles({
           count: this.boss.width,
@@ -313,10 +318,7 @@ export class GameScene extends Container implements IScene {
           posY: this.boss.y,
           fillColor: 0xbaa0de,
         });
-        if (this.health <= 0) {
-          this.boss.removeFromParent();
-          this.healthBar.removeFromParent();
-        }
+
       }
     });
   }
@@ -395,8 +397,6 @@ export class GameScene extends Container implements IScene {
     this.gameEnded = false;
     this.player.isAlive = true;
     this.messageModal.visible = false;
-    this.gameEnded = false;
-    this.player.isAlive = true;
 
     this.spawnEnemies();
   }
@@ -404,6 +404,8 @@ export class GameScene extends Container implements IScene {
   public endGame(): void {
     this.gameEnded = true;
     this.messageModal.visible = true;
+    this.boss.removeFromParent();
+    this.healthBar.removeFromParent();
   }
 
   public beginEndGame(message: string): void {

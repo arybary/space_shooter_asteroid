@@ -1,4 +1,4 @@
-import { Ship } from "./Ship";
+import { Ship } from "../game/Ship";
 
 export class BossController {
     public boss: Ship;
@@ -9,7 +9,7 @@ export class BossController {
         this.changeFunctionRandomly();
     }
 
-    private shoot(): void {
+    shoot(): void {
         setInterval(() => {
         this.boss.state.shoot = true;
         setTimeout(() => (this.boss.state.shoot = false), 1);

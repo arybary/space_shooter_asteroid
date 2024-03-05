@@ -1,7 +1,7 @@
 import { AnimatedSprite, Application, type Texture } from "pixi.js";
 import { Projectile } from "./Projectile";
 import { gsap } from "gsap";
-import { COLOR_DARK_GRAY, COLOR_GREEN } from "../utils/constants";
+import { COLOR_DARK_GRAY } from "../utils/constants";
 
 export interface IShipOptions {
   shipAnimation: Texture[];
