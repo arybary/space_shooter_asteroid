@@ -74,14 +74,14 @@ export class Ship extends AnimatedSprite {
       directionProjectile = Ship.options.bulletSpeed;
     }
     if (direction == "down") {
-      directionProjectile = -Ship.options.bulletSpeed;
+      directionProjectile = -Ship.options.bulletSpeed / 3;
     }
     const projectile = new Projectile({
       id: ++this.ids,
       app: this.app,
       radius: 10,
       fillColor: COLOR_DARK_GRAY,
-      vx: Ship.options.angle,
+      vx: 0,
       vy: directionProjectile,
     });
     projectile.anchor.set(0.5, 0.5);

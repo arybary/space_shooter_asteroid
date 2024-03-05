@@ -5,7 +5,7 @@ export class BossController {
 
     constructor(boss: Ship) {
         this.boss = boss;
-        this.boss.state.shoot = true
+
     }
 
 
