@@ -1,3 +1,5 @@
+import { AssetsManifest } from "pixi.js";
+
 export const FONT_FAMILY = "Zubilo Black";
 export const COLOR_GREEN = 0x00ff99;
 export const COLOR_WHITE = 0xffffff;
@@ -10,3 +12,14 @@ export const COLOR_2_PLACE = 0x205caf;
 export const COLOR_3_PLACE = 0x8a1a00;
 export const COLOR_DARK_GRAY = 0x333333;
 
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "initial-bundle",
+            assets: {
+                spritesheet: "assets/textures/texture.json",
+                font: "assets/fonts/Zubilo_Black.woff2",
+            },
+        },
+    ],
+};

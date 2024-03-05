@@ -27,19 +27,19 @@ export class PlayerController {
             case "ShiftLeft":
                 this.player.state.shoot = true;
 
-                break;
-            case "KeyA":
-            case "ArrowLeft":
-                this.player.state.movingLeft = true;
-                this.player.state.movingRight = false;
-                break;
-            case "KeyD":
-            case "ArrowRight":
-                this.player.state.movingLeft = false;
-                this.player.state.movingRight = true;
-                break;
-        }
-    };
+              break;
+          case "KeyA":
+          case "ArrowLeft":
+              this.player.state.movingLeft = true;
+              this.player.state.movingRight = false;
+              break;
+          case "KeyD":
+          case "ArrowRight":
+              this.player.state.movingLeft = false;
+              this.player.state.movingRight = true;
+              break;
+      }
+  };
 
     private handleKeyUp = (e: KeyboardEvent): void => {
         switch (e.code) {
@@ -53,12 +53,12 @@ export class PlayerController {
             case "ArrowLeft":
                 this.player.state.movingLeft = false;
 
-                break;
-            case "KeyD":
-            case "ArrowRight":
-                this.player.state.movingLeft = false;
-                this.player.state.movingRight = false;
-                break;
-        }
-    };
+              break;
+          case "KeyD":
+          case "ArrowRight":
+              this.player.state.movingLeft = false;
+              this.player.state.movingRight = false;
+              break;
+      }
+  };
 }

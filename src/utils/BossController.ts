@@ -5,29 +5,23 @@ export class BossController {
 
     constructor(boss: Ship) {
         this.boss = boss;
-        this.shoot();
-        this.changeFunctionRandomly();
+        this.boss.state.shoot = true
     }
 
-    shoot(): void {
-        setInterval(() => {
-        this.boss.state.shoot = true;
-        setTimeout(() => (this.boss.state.shoot = false), 1);
-    }, 2000);
-  }
+
 
     moveLeft = () => {
         this.boss.state.movingLeft = false;
         this.boss.state.movingRight = true;
     };
     moveStop = () => {
-      this.boss.state.movingLeft = false;
-      this.boss.state.movingRight = false;
+        this.boss.state.movingLeft = false;
+        this.boss.state.movingRight = false;
   };
 
     moveRight = () => {
-      this.boss.state.movingLeft = true;
-      this.boss.state.movingRight = false;
+        this.boss.state.movingLeft = true;
+        this.boss.state.movingRight = false;
   };
 
     randomizeFunction(
@@ -41,7 +35,6 @@ export class BossController {
 
     changeFunctionRandomly() {
         setInterval(() => {
-        console.log("5");
         const randomFunction = this.randomizeFunction(
             this.moveLeft,
             this.moveRight,
@@ -50,4 +43,9 @@ export class BossController {
         randomFunction();
     }, 1000);
   }
+    stop() {
+        this.boss.state.movingLeft = false;
+        this.boss.state.movingRight = false;
+        this.boss.state.shoot = false;
+    }
 }

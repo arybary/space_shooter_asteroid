@@ -16,7 +16,6 @@ export abstract class SceneManager {
   private static currentScene: IScene = new DefaultScene();
   private static resizeTimeoutId: number;
   private static readonly resizeTimeout = 300;
-
   public static get width(): number {
     return window.innerWidth;
   }

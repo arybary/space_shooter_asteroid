@@ -1,17 +1,12 @@
-import { Container, Graphics, Assets, type Spritesheet } from "pixi.js";
+import {
+  Container,
+  Graphics,
+  Assets,
+  type Spritesheet,
 
+} from "pixi.js";
 import { type IScene } from "./SceneManager";
-
-export const manifest = {
-  bundles: [
-    {
-      name: "initial-bundle",
-      assets: {
-        spritesheet: "assets/textures/texture.json",
-      },
-    },
-  ],
-};
+import { manifest } from "../utils/constants";
 
 export interface ILoaderSceneOptions {
   viewWidth: number;

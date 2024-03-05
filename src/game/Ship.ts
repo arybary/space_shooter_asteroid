@@ -74,7 +74,7 @@ export class Ship extends AnimatedSprite {
       directionProjectile = Ship.options.bulletSpeed;
     }
     if (direction == "down") {
-      directionProjectile = -Ship.options.bulletSpeed / 2;
+      directionProjectile = -Ship.options.bulletSpeed;
     }
     const projectile = new Projectile({
       id: ++this.ids,
@@ -86,7 +86,6 @@ export class Ship extends AnimatedSprite {
     });
     projectile.anchor.set(0.5, 0.5);
     projectile.position.set(this.x, this.y);
-
     return projectile;
   }
 

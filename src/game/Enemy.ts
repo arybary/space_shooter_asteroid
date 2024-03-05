@@ -33,25 +33,23 @@ export class Enemy extends Sprite {
     const halfWidth = this.width / 2;
     const halfHeight = this.height / 2;
 
-    // Обновление позиции
     this.x += Math.cos(i) * this.vx;
     this.y += Math.sin(i) * this.vy;
 
-    // Проверка выхода за границы экрана и корректировка позиции
     if (this.x < halfWidth) {
       this.x = halfWidth;
-      this.vx *= -1; // изменяем направление
+      this.vx *= -1;
     } else if (this.x > width - halfWidth) {
       this.x = width - halfWidth;
-      this.vx *= -1; // изменяем направление
+      this.vx *= -1;
     }
 
     if (this.y < halfHeight) {
       this.y = halfHeight;
-      this.vy *= -1; // изменяем направление
+      this.vy *= -1;
     } else if (this.y > height - halfHeight) {
       this.y = height - halfHeight;
-      this.vy *= -1; // изменяем направление
+      this.vy *= -1;
     }
   }
 }
