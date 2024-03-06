@@ -1,18 +1,51 @@
 import { Howl } from "howler";
 
-type SoundName = "music" | "shot";
+type SoundName =
+  | "music"
+  | "shot"
+  | "explosion"
+  | "startBossFight"
+  | "bossFight"
+  | "win"
+  | "lose";
 
 export class GameAudio {
   muted = true;
+
   music = new Howl({
     src: "/assets/sounds/music.mp3",
     loop: true,
-    volume: 0.5,
+    volume: 0.2,
+  });
+
+  explosion = new Howl({
+    src: "/assets/sounds/explosion.mp3",
+    volume: 0.2,
   });
 
   shot = new Howl({
     src: "/assets/sounds/shot.mp3",
+    volume: 0.2,
+  });
 
+  startBossFight = new Howl({
+    src: "/assets/sounds/start_boss.mp3",
+    volume: 0.5,
+  });
+
+  bossFight = new Howl({
+    src: "/assets/sounds/boss_fight.mp3",
+    loop: true,
+    volume: 0.2,
+  });
+
+  win = new Howl({
+    src: "/assets/sounds/you_win.mp3",
+    volume: 0.5,
+  });
+
+  lose = new Howl({
+    src: "/assets/sounds/game_over.mp3",
     volume: 0.5,
   });
 
@@ -22,6 +55,16 @@ export class GameAudio {
         return [this.music];
       case "shot":
         return [this.shot];
+      case "explosion":
+        return [this.explosion];
+      case "startBossFight":
+        return [this.startBossFight];
+      case "bossFight":
+        return [this.bossFight];
+      case "win":
+        return [this.win];
+      case "lose":
+        return [this.lose];
     }
     return [];
   }
@@ -69,5 +112,25 @@ export class GameAudio {
 
   playShot() {
     this.play({ name: "shot" });
+  }
+  playExplosion() {
+    this.play({ name: "explosion" });
+  }
+
+  playBossFight() {
+    this.play({ name: "startBossFight", stop: ["music"] });
+    this.play({ name: "bossFight" });
+  }
+  playWin() {
+    this.play({
+      name: "win",
+      stop: ["music", "explosion", "startBossFight", "bossFight"],
+    });
+  }
+  playLose() {
+    this.play({
+      name: "lose",
+      stop: ["music", "explosion", "startBossFight", "bossFight"],
+    });
   }
 }

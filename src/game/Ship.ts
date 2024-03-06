@@ -91,7 +91,6 @@ export class Ship extends AnimatedSprite {
 
   setKilled(): void {
     this.isAlive = false;
-
     this.velocity.vx = 0;
     this.velocity.vy = 0;
   }

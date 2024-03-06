@@ -167,16 +167,9 @@ export class GameScene extends Container implements IScene {
   public handleUpdate(deltaMS: number): void {
     if (this.gameEnded) return;
 
-
     if (this.time <= 0 || (this.countEnemy > 0 && this.countProjectile === 0)) {
       this.beginEndGame("Lose");
     }
-
-
-    if (this.health <= 0) {
-      this.beginEndGame("win");
-    }
-
 
     const { x, y, width, height } = this;
 
@@ -194,9 +187,6 @@ export class GameScene extends Container implements IScene {
     });
 
     if (this.countEnemy === 0) {
-
-
-
       this.bossFight();
     }
 
@@ -207,7 +197,11 @@ export class GameScene extends Container implements IScene {
         this.timeoutForShootPlayer = null;
       }, 500);
     }
-    if (!this.timeoutForShootBoss && this.boss.state.shoot && this.countProjectile > 0) {
+    if (
+      !this.timeoutForShootBoss &&
+      this.boss.state.shoot &&
+      this.countProjectile > 0
+    ) {
       this.audio.playShot();
       this.projectilesBossContainer.addChild(this.boss.shipShoot("down"));
       this.timeoutForShootBoss = setTimeout(() => {
@@ -264,6 +258,7 @@ export class GameScene extends Container implements IScene {
     this.boss.updateMove();
 
     if (this.startBossFight) {
+      this.audio.playBossFight();
       this.countProjectile = 10;
       this.time = 60000;
       this.boss.state.shoot = true;
@@ -272,9 +267,15 @@ export class GameScene extends Container implements IScene {
       this.startBossFight = false;
     }
 
+    if (this.health <= 0) {
+      this.beginEndGame("Win");
+    }
     if (this.countProjectile === 0 && this.health > 0) {
       this.beginEndGame("Lose");
-    };
+    }
+    if (!this.player.isAlive) {
+      this.beginEndGame("Lose");
+    }
     const { x, y, width, height } = this;
     this.updateContainer(this.projectilesBossContainer, {
       left: x,
@@ -293,6 +294,7 @@ export class GameScene extends Container implements IScene {
       this.projectilesPlayerContainer.children.forEach((child) => {
         const projectileBounds = (child as Projectile).getBounds();
         if (Collision.checkCollision(enemyBounds, projectileBounds) > 0) {
+          this.audio.playExplosion();
           (child as Projectile).removeFromParent();
           this.spawnParticles({
             count: enemy.width,
@@ -313,6 +315,7 @@ export class GameScene extends Container implements IScene {
       const projectileBounds = (child as Projectile).getBounds();
       const bossBounds = this.boss.getBounds();
       if (Collision.checkCollision(bossBounds, projectileBounds) > 0) {
+        this.audio.playExplosion();
         this.health -= 1;
         (child as Projectile).removeFromParent();
         this.countProjectile -= 1;
@@ -332,6 +335,7 @@ export class GameScene extends Container implements IScene {
       const projectileBossBounds = (projectileBoss as Projectile).getBounds();
       const playerBounds = this.player.getBounds();
       if (Collision.checkCollision(playerBounds, projectileBossBounds) > 0) {
+        this.audio.playExplosion();
         this.player.isAlive = false;
         (projectileBoss as Projectile).removeFromParent();
       }
@@ -346,6 +350,7 @@ export class GameScene extends Container implements IScene {
             projectileBossBounds
           ) > 0
         ) {
+          this.audio.playExplosion();
           this.spawnParticles({
             count: projectilePlayer.width,
             posX: projectilePlayer.x,
@@ -409,7 +414,6 @@ export class GameScene extends Container implements IScene {
   }
 
   public endGame(): void {
-    this.gameEnded = true;
     this.messageModal.visible = true;
     this.bossController.stop();
     this.removeChild(this.boss, this.healthBar);
@@ -431,14 +435,13 @@ export class GameScene extends Container implements IScene {
     }
   }
 
-  public beginEndGame(message: string): void {
-    this.audio.stopMusic();
-    this.spawnParticles({
-      count: this.player.width,
-      posX: this.player.x,
-      posY: this.player.y,
-      fillColor: 0xffffff,
-    });
+  public beginEndGame(message: "Lose" | "Win"): void {
+    this.gameEnded = true;
+    if (message === "Lose") {
+      this.audio.playLose();
+    } else {
+      this.audio.playWin();
+    }
 
     this.removeChild(this.boss, this.healthBar);
     this.player.setKilled();
