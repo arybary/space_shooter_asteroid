@@ -30,6 +30,6 @@
 - якщо закінчились пулі
 - якщо влучив босс
 
-виграєте, якщо знищили всі астероїди
+виграєте, якщо знищили всі астероїди та босса
 
 #[TEST](https://drive.google.com/file/d/1q96psBIx_dIsufJnypSzn5gdwEDHHJB_/view?usp=sharing)
