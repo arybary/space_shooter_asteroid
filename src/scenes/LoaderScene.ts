@@ -78,18 +78,17 @@ export class LoaderScene extends Container implements IScene {
   private readonly downloadProgress = (progressRatio: number): void => {
     gsap.to(this.loaderBarFill, {
       width:
-        (LoaderScene.barOptions.width - LoaderScene.barOptions.borderThick * 2) *
+        (LoaderScene.barOptions.width -
+          LoaderScene.barOptions.borderThick * 2) *
         progressRatio,
     });
   };
 
   public getAssets(): {
     spritesheet: Spritesheet;
-    menuBackground: Texture;
   } {
     return {
       spritesheet: Assets.get("spritesheet"),
-      menuBackground: Assets.get("menuBackground"),
     };
   }
 
@@ -145,7 +144,6 @@ export class LoaderScene extends Container implements IScene {
       this.height = occupiedHeight;
     }
   }
-
 
   public handleUpdate(): void { }
 }
