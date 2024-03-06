@@ -58,7 +58,7 @@ export class GameScene extends Container implements IScene {
   private enemiesContainer!: ParticleContainer;
   private messageModal!: MessageModal;
   private enemyTexture!: Texture;
-  private playerController!: PlayerController;
+  public playerController!: PlayerController;
   private bossController!: BossController;
   private startBossFight: boolean = true;
   private timeoutForShootPlayer: number | null = null;

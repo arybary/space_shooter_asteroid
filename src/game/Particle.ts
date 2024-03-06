@@ -25,7 +25,7 @@ export class Particle extends Sprite {
         this.setup(options);
     }
 
-    setup(options: IParticleOptions): void {
+    private setup(options: IParticleOptions): void {
         let texture = Particle.textureCache;
         if (texture == null) {
             const circle = new Graphics();
@@ -44,7 +44,7 @@ export class Particle extends Sprite {
         this.tint = options.fillColor;
     }
 
-    update(): void {
+    public update(): void {
         this.x = this.x + this.vx;
         this.y = this.y + this.vy;
         this.alpha = this.alpha - 0.01;
@@ -53,7 +53,7 @@ export class Particle extends Sprite {
         }
     }
 
-    isOutOfViewport({
+    public isOutOfViewport({
         left,
         top,
         right,

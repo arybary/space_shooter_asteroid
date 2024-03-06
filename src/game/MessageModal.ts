@@ -1,17 +1,17 @@
 import { Container, Graphics, Text, TextStyle } from "pixi.js";
-import { FONT_FAMILY } from "../utils/constants";
+import { COLOR_DARK_GRAY, COLOR_GREEN, COLOR_PURP, COLOR_WHITE, FONT_FAMILY } from "../utils/constants";
 
 export class MessageModal extends Container {
-  public styleTextButton = new TextStyle({
+  private styleTextButton = new TextStyle({
     fontFamily: FONT_FAMILY,
     fontSize: 32,
     fontStyle: "normal",
     fontWeight: "bold",
-    fill: ["#ffffff", "#00ff99"],
-    stroke: "#4a1850",
+    fill: [COLOR_WHITE, COLOR_GREEN],
+    stroke: COLOR_DARK_GRAY,
     strokeThickness: 5,
     dropShadow: true,
-    dropShadowColor: "#000000",
+    dropShadowColor: COLOR_PURP,
     dropShadowBlur: 4,
     dropShadowDistance: 6,
     wordWrap: true,
@@ -39,7 +39,7 @@ export class MessageModal extends Container {
     this.setupEventListeners();
   }
 
-  setup(): void {
+  private setup(): void {
     const { buttonOptions } = this;
     this.button = new Graphics();
     this.button.eventMode = "dynamic";
@@ -56,7 +56,7 @@ export class MessageModal extends Container {
     this.button.addChild(this.buttonText);
   }
 
-  draw(): void {
+  private draw(): void {
     const { buttonOptions } = this;
 
     this.button.beginFill(buttonOptions.fill, 0.25);
@@ -71,12 +71,12 @@ export class MessageModal extends Container {
     this.button.endFill();
   }
 
-  setupEventListeners(): void {
+  private setupEventListeners(): void {
     this.button.on("pointertap", (e) => {
       this.emit("click", e);
     });
   }
-  setButtonText(text: string): void {
+  public setButtonText(text: string): void {
     this.buttonText.text = text;
   }
 }

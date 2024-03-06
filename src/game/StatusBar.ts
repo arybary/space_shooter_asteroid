@@ -7,7 +7,7 @@ import {
 } from "../utils/constants";
 
 export class StatusBar extends Container {
-    public styleText = new TextStyle({
+    private styleText = new TextStyle({
         fontFamily: FONT_FAMILY,
         fontSize: 20,
         fontStyle: "normal",
@@ -42,14 +42,14 @@ export class StatusBar extends Container {
         return `TIME: ${append}`;
   }
 
-    setup(): void {
+    private setup(): void {
         const projectileText = new Text(
             StatusBar.getProjectileText("-"),
             this.styleText
         );
         projectileText.position.set(StatusBar.padding, StatusBar.padding);
-      this.addChild(projectileText);
-      this.projectileText = projectileText;
+        this.addChild(projectileText);
+        this.projectileText = projectileText;
 
       const timeText = new Text(StatusBar.getTimeText(0), this.styleText);
       timeText.position.set(
@@ -60,11 +60,11 @@ export class StatusBar extends Container {
       this.timeText = timeText;
   }
 
-    updateProjectile(Projectile: number): void {
+    public updateProjectile(Projectile: number): void {
         this.projectileText.text = StatusBar.getProjectileText(Projectile);
   }
 
-    updateTime(time: number): void {
+    public updateTime(time: number): void {
         const timeTxt = (time * 0.001).toFixed(1);
         this.timeText.text = StatusBar.getTimeText(timeTxt);
   }

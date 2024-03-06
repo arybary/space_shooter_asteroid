@@ -46,7 +46,7 @@ export class Ship extends AnimatedSprite {
     this.play();
   }
 
-  updateMove() {
+  public updateMove() {
     if (!this.isAlive) {
       return;
     }
@@ -67,7 +67,7 @@ export class Ship extends AnimatedSprite {
     }
   }
 
-  shipShoot(speed: number): Projectile {
+  public shipShoot(speed: number): Projectile {
     const projectile = new Projectile({
       id: ++this.ids,
       app: this.app,

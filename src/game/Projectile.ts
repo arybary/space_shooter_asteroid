@@ -30,26 +30,26 @@ export class Projectile extends Sprite {
         this.setup(options);
     }
 
-    setup(options: IProjectileOptions): void {
+    private setup(options: IProjectileOptions): void {
         let texture = Projectile.textureCache;
         if (texture == null) {
-          const circle = new Graphics();
-          circle.beginFill(this.fillColor);
-          circle.drawCircle(0, 0, this.radius);
-          circle.endFill();
-          circle.cacheAsBitmap = true;
-          texture = options.app.renderer.generateTexture(circle);
-          Projectile.textureCache = texture;
-      }
+            const circle = new Graphics();
+            circle.beginFill(this.fillColor);
+            circle.drawCircle(0, 0, this.radius);
+            circle.endFill();
+            circle.cacheAsBitmap = true;
+            texture = options.app.renderer.generateTexture(circle);
+            Projectile.textureCache = texture;
+        }
         this.texture = texture;
     }
 
-    update(): void {
+    public update(): void {
         this.x = this.x + this.vx;
         this.y = this.y + this.vy;
     }
 
-    isOutOfViewport({
+    public isOutOfViewport({
         left,
         top,
         right,
@@ -74,8 +74,8 @@ export class Projectile extends Sprite {
             return true;
         }
         if (pTop > bottom) {
-          return true;
-      }
+            return true;
+        }
         return false;
     }
 }

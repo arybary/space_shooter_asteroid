@@ -1,10 +1,4 @@
-import {
-  Container,
-  Graphics,
-  Assets,
-  type Spritesheet,
-  type Texture,
-} from "pixi.js";
+import { Container, Graphics, Assets, type Spritesheet } from "pixi.js";
 import { type IScene } from "./SceneManager";
 import { COLOR_DARK_GRAY, COLOR_GREEN, manifest } from "../utils/constants";
 import { gsap } from "gsap";

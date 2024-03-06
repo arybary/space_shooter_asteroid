@@ -5,7 +5,7 @@ export interface IEnemy {
 }
 
 export class Enemy extends Sprite {
-  static options = {
+  private static options = {
     scale: 0.4,
     angle: 0.3,
     moveSpeed: 6,
@@ -23,7 +23,7 @@ export class Enemy extends Sprite {
     this.vy = Enemy.options.moveSpeed;
   }
 
-  update({
+  public update({
     i,
     width,
     height,
