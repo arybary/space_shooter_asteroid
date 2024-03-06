@@ -444,8 +444,6 @@ export class GameScene extends Container implements IScene {
     while (this.particlesContainer.children[0] != null) {
       this.particlesContainer.children[0].destroy();
     }
-
-    this.particlesContainer.children.forEach((children) => children.destroy());
     while (this.enemiesContainer.children[0] != null) {
       const enemy = this.enemiesContainer.children[0] as Enemy;
       enemy.destroy();
