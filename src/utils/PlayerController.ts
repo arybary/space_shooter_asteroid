@@ -1,6 +1,7 @@
 import { Ship } from "../game/Ship";
 import { GameScene } from "../scenes/GameScene";
 
+
 interface IPlayerController {
     game: GameScene;
     player: Ship;

@@ -3,10 +3,11 @@ import {
   Graphics,
   Assets,
   type Spritesheet,
-
+  type Texture,
 } from "pixi.js";
 import { type IScene } from "./SceneManager";
-import { manifest } from "../utils/constants";
+import { COLOR_DARK_GRAY, COLOR_GREEN, manifest } from "../utils/constants";
+import { gsap } from "gsap";
 
 export interface ILoaderSceneOptions {
   viewWidth: number;
@@ -14,13 +15,13 @@ export interface ILoaderSceneOptions {
 }
 
 export class LoaderScene extends Container implements IScene {
-  private readonly barOptions = {
+  static barOptions = {
     width: 350,
-    height: 50,
-    fillColor: 0x008800,
+    height: 40,
+    fillColor: COLOR_GREEN,
     borderRadius: 5,
     borderThick: 5,
-    borderColor: 0x000000,
+    borderColor: COLOR_DARK_GRAY,
   };
 
   private loaderBarFill!: Graphics;
@@ -30,6 +31,7 @@ export class LoaderScene extends Container implements IScene {
 
     this.setup();
     this.draw();
+    this.loaderBarFill.width = 10;
   }
 
   setup(): void {
@@ -43,7 +45,8 @@ export class LoaderScene extends Container implements IScene {
   }
 
   draw(): void {
-    const { loaderBarFill, loaderBarBorder, barOptions } = this;
+    const { barOptions } = LoaderScene;
+    const { loaderBarFill, loaderBarBorder } = this;
     loaderBarBorder.beginFill(barOptions.borderColor);
     loaderBarBorder.drawRoundedRect(
       0,
@@ -55,9 +58,10 @@ export class LoaderScene extends Container implements IScene {
     loaderBarBorder.endFill();
 
     loaderBarFill.beginFill(barOptions.fillColor);
+    loaderBarFill.position.set(barOptions.borderThick, barOptions.borderThick);
     loaderBarFill.drawRoundedRect(
-      barOptions.borderThick,
-      barOptions.borderThick,
+      0,
+      0,
       barOptions.width - barOptions.borderThick * 2,
       barOptions.height - barOptions.borderThick * 2,
       barOptions.borderRadius
@@ -68,22 +72,24 @@ export class LoaderScene extends Container implements IScene {
   async initializeLoader(): Promise<void> {
     await Assets.init({ manifest });
 
-    await Assets.loadBundle(
-      manifest.bundles.map((bundle) => bundle.name),
-      this.downloadProgress
-    );
+    await Assets.loadBundle(manifest.bundles[0].name, this.downloadProgress);
   }
 
   private readonly downloadProgress = (progressRatio: number): void => {
-    this.loaderBarFill.width =
-      (this.barOptions.width - this.barOptions.borderThick * 2) * progressRatio;
+    gsap.to(this.loaderBarFill, {
+      width:
+        (LoaderScene.barOptions.width - LoaderScene.barOptions.borderThick * 2) *
+        progressRatio,
+    });
   };
 
   public getAssets(): {
     spritesheet: Spritesheet;
+    menuBackground: Texture;
   } {
     return {
       spritesheet: Assets.get("spritesheet"),
+      menuBackground: Assets.get("menuBackground"),
     };
   }
 
@@ -105,9 +111,9 @@ export class LoaderScene extends Container implements IScene {
         availableHeight > totalHeight ? (availableHeight - totalHeight) / 2 : 0;
 
       this.x = x;
-      this.width = this.barOptions.width;
+      this.width = LoaderScene.barOptions.width;
       this.y = y;
-      this.height = this.barOptions.height;
+      this.height = LoaderScene.barOptions.height;
     } else {
       let scale = 1;
       if (totalHeight >= totalWidth) {
@@ -140,7 +146,6 @@ export class LoaderScene extends Container implements IScene {
     }
   }
 
-  handleMounted(): void { }
 
   public handleUpdate(): void { }
 }

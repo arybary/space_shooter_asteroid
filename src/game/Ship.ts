@@ -15,7 +15,6 @@ export class Ship extends AnimatedSprite {
     scale: 0.5,
     angle: 0.3,
     moveSpeed: 6,
-
   };
 
   public velocity = {
@@ -69,8 +68,6 @@ export class Ship extends AnimatedSprite {
   }
 
   shipShoot(speed: number): Projectile {
-
-
     const projectile = new Projectile({
       id: ++this.ids,
       app: this.app,
@@ -82,11 +79,5 @@ export class Ship extends AnimatedSprite {
     projectile.anchor.set(0.5, 0.5);
     projectile.position.set(this.x, this.y);
     return projectile;
-  }
-
-  setKilled(): void {
-    this.isAlive = false;
-    this.velocity.vx = 0;
-    this.velocity.vy = 0;
   }
 }

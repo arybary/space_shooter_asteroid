@@ -1,5 +1,10 @@
 import { Container, Text, TextStyle } from "pixi.js";
-import { FONT_FAMILY } from "../utils/constants";
+import {
+    COLOR_DARC_PURP,
+    COLOR_PURP,
+    COLOR_WHITE,
+    FONT_FAMILY,
+} from "../utils/constants";
 
 export class StatusBar extends Container {
     public styleText = new TextStyle({
@@ -7,11 +12,11 @@ export class StatusBar extends Container {
         fontSize: 20,
         fontStyle: "normal",
         fontWeight: "bold",
-        fill: ["#ffffff", "#00ff99"],
-        stroke: "#4a1850",
+        fill: COLOR_PURP,
+        stroke: COLOR_DARC_PURP,
         strokeThickness: 5,
         dropShadow: true,
-        dropShadowColor: "0x98cbd8",
+        dropShadowColor: COLOR_WHITE,
         dropShadowBlur: 4,
         dropShadowDistance: 6,
         wordWrap: true,
@@ -19,33 +24,30 @@ export class StatusBar extends Container {
         lineJoin: "round",
     });
 
-    static padding: 20
-
+    static padding: 20;
 
     public projectileText!: Text;
     public timeText!: Text;
 
     constructor() {
-      super();
-      this.setup();
+        super();
+        this.setup();
   }
 
     static getProjectileText(append: string | number): string {
-      return `PROJECTILE: ${append}`;
+        return `PROJECTILE: ${append}`;
   }
 
     static getTimeText(append: string | number): string {
-      return `TIME: ${append}`;
+        return `TIME: ${append}`;
   }
 
     setup(): void {
-      const projectileText = new Text(
-          StatusBar.getProjectileText("-"),
-          this.styleText
-      );
-      projectileText.position.set(
-          StatusBar.padding,
-          StatusBar.padding)
+        const projectileText = new Text(
+            StatusBar.getProjectileText("-"),
+            this.styleText
+        );
+        projectileText.position.set(StatusBar.padding, StatusBar.padding);
       this.addChild(projectileText);
       this.projectileText = projectileText;
 
@@ -59,11 +61,11 @@ export class StatusBar extends Container {
   }
 
     updateProjectile(Projectile: number): void {
-      this.projectileText.text = StatusBar.getProjectileText(Projectile);
+        this.projectileText.text = StatusBar.getProjectileText(Projectile);
   }
 
     updateTime(time: number): void {
-      const timeTxt = (time * 0.001).toFixed(1);
-      this.timeText.text = StatusBar.getTimeText(timeTxt);
+        const timeTxt = (time * 0.001).toFixed(1);
+        this.timeText.text = StatusBar.getTimeText(timeTxt);
   }
 }

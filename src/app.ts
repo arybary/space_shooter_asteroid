@@ -3,6 +3,7 @@ import { SceneManager } from "./scenes/SceneManager";
 import { LoaderScene } from "./scenes/LoaderScene";
 import { GameScene } from "./scenes/GameScene";
 
+
 export async function run() {
   const loader = document.querySelector(".loader");
   if (loader != null) {

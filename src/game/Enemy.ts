@@ -1,4 +1,4 @@
-import { Sprite, type Texture } from "pixi.js";
+import { Sprite, Texture } from "pixi.js";
 
 export interface IEnemy {
   texture: Texture;
@@ -10,8 +10,10 @@ export class Enemy extends Sprite {
     angle: 0.3,
     moveSpeed: 6,
   };
+
   public vx: number;
   public vy: number;
+
   constructor({ texture }: IEnemy) {
     super(texture);
     this.scale.set(Enemy.options.scale);

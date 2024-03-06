@@ -17,6 +17,17 @@ import { HealthBossBar } from "../game/HealthBossBar";
 import { MessageModal } from "../game/MessageModal";
 import { StatusBar } from "../game/StatusBar";
 import { GameAudio } from "../utils/Audio";
+import {
+  COLOR_DARK_GRAY,
+  COLOR_RED,
+  COUNT_ENEMY,
+  COUNT_PROJECTILE,
+  HEALTH,
+  SPEED_BOSS_PROJECTLE,
+  SPEED_PLAYER_PROJECTLE,
+  TIME,
+  TIMEOUT_FOR_SHOOT_BOSS,
+} from "../utils/constants";
 
 interface IGameSceneOptions {
   app: Application;
@@ -30,28 +41,28 @@ interface IGameSceneOptions {
 
 export class GameScene extends Container implements IScene {
   private app!: Application;
-  audio!: GameAudio;
+  private audio!: GameAudio;
   private background!: Sprite;
   private gameEnded: boolean = true;
-  private countEnemy: number = 5;
-  private countProjectile: number = 10;
-  private time: number = 60000;
-  public timeoutForShootPlayer!: number | null;
-  public timeoutForShootBoss!: number | null;
-  private health: number = 4;
+  private countEnemy: number = COUNT_ENEMY;
+  private countProjectile: number = COUNT_PROJECTILE;
+  private time: number = TIME;
+  private health: number = HEALTH;
   private healthBar!: HealthBossBar;
   private player!: Ship;
   private boss!: Ship;
+  private statusBar!: StatusBar;
   private projectilesPlayerContainer!: ParticleContainer;
   private projectilesBossContainer!: ParticleContainer;
   private particlesContainer!: ParticleContainer;
   private enemiesContainer!: ParticleContainer;
   private messageModal!: MessageModal;
-  public statusBar!: StatusBar;
   private enemyTexture!: Texture;
-  public playerController!: PlayerController;
-  public bossController!: BossController;
-  public startBossFight: boolean = true;
+  private playerController!: PlayerController;
+  private bossController!: BossController;
+  private startBossFight: boolean = true;
+  private timeoutForShootPlayer: number | null = null;
+  private timeoutForShootBoss: number | null = null;
 
   constructor(options: IGameSceneOptions) {
     super();
@@ -79,7 +90,7 @@ export class GameScene extends Container implements IScene {
       app: this.app,
       shipAnimation: options.bossAnimation,
     });
-    this.healthBar = new HealthBossBar({ boxWidth: this.boss.width });
+    this.healthBar = new HealthBossBar({ boxWidth: options.viewWidth / 5 });
     this.enemyTexture = options.asterodTexture;
 
     this.addChild(this.background, this.statusBar);
@@ -134,7 +145,8 @@ export class GameScene extends Container implements IScene {
       viewHeight - this.player.height / 2
     );
     this.boss.position.set(viewWidth / 2, this.boss.height);
-    this.statusBar.position.set(viewWidth - this.statusBar.width * 2, 0);
+    this.statusBar.position.set(this.width - this.statusBar.width - 50, 10);
+    this.healthBar.position.set(10, 10);
     this.messageModal.position.set(
       viewWidth / 2 - this.messageModal.width / 2,
       viewHeight / 2 - this.messageModal.height / 2
@@ -189,7 +201,9 @@ export class GameScene extends Container implements IScene {
 
     if (!this.timeoutForShootPlayer && this.player.state.shoot) {
       this.audio.playShot();
-      this.projectilesPlayerContainer.addChild(this.player.shipShoot(-6));
+      this.projectilesPlayerContainer.addChild(
+        this.player.shipShoot(SPEED_PLAYER_PROJECTLE)
+      );
       this.timeoutForShootPlayer = setTimeout(() => {
         this.timeoutForShootPlayer = null;
       }, 500);
@@ -200,10 +214,12 @@ export class GameScene extends Container implements IScene {
       this.countProjectile > 0
     ) {
       this.audio.playShot();
-      this.projectilesBossContainer.addChild(this.boss.shipShoot(3));
+      this.projectilesBossContainer.addChild(
+        this.boss.shipShoot(SPEED_BOSS_PROJECTLE)
+      );
       this.timeoutForShootBoss = setTimeout(() => {
         this.timeoutForShootBoss = null;
-      }, 2000);
+      }, TIMEOUT_FOR_SHOOT_BOSS);
     }
     this.updateContainer(this.particlesContainer, {
       left: x,
@@ -250,18 +266,12 @@ export class GameScene extends Container implements IScene {
     });
   }
   public bossFight() {
-
-
-
-
     if (this.startBossFight) {
       this.audio.playBossFight();
-      this.countProjectile = 10;
-      this.time = 60000;
+      this.countProjectile = COUNT_PROJECTILE;
+      this.time = TIME;
       this.addChild(this.boss);
-      this.boss.addChild(this.healthBar)
-      this.healthBar.position.set(-this.boss.width / 2, -this.boss.height - this.boss.height / 2)
-      this.healthBar.rotation = 0
+      this.addChild(this.healthBar);
 
       this.bossController.changeFunctionRandomlyMove();
       this.bossController.shoot();
@@ -304,7 +314,7 @@ export class GameScene extends Container implements IScene {
             count: enemy.width,
             posX: enemy.x,
             posY: enemy.y,
-            fillColor: 0xbaa0de,
+            fillColor: COLOR_RED,
           });
           (enemy as Enemy).destroy();
           this.countEnemy -= 1;
@@ -329,7 +339,7 @@ export class GameScene extends Container implements IScene {
           count: this.boss.width,
           posX: this.boss.x,
           posY: this.boss.y,
-          fillColor: 0xbaa0de,
+          fillColor: COLOR_RED,
         });
       }
     });
@@ -360,13 +370,13 @@ export class GameScene extends Container implements IScene {
             count: projectilePlayer.width,
             posX: projectilePlayer.x,
             posY: projectilePlayer.y,
-            fillColor: 0xbaa0de,
+            fillColor: COLOR_DARK_GRAY,
           });
           this.spawnParticles({
             count: projectileBoss.width,
             posX: projectileBoss.x,
             posY: projectileBoss.y,
-            fillColor: 0xbaa0de,
+            fillColor: COLOR_DARK_GRAY,
           });
           projectilePlayer.removeFromParent();
           projectileBoss.removeFromParent();
@@ -387,26 +397,26 @@ export class GameScene extends Container implements IScene {
     posY: number;
     fillColor: number;
   }): void {
-    for (let index = 0; index < count; index++) {
+    Array.from({ length: count }, () => {
       const vx = (Math.random() - 0.5) * 10;
       const vy = (Math.random() - 0.5) * 10;
       const particle = new Particle({
         app: this.app,
-        radius: 2,
+        radius: 3,
         vx,
         vy,
         fillColor,
       });
       particle.position.set(posX, posY);
       this.particlesContainer.addChild(particle);
-    }
+    });
   }
 
   public startGame(): void {
-    this.countProjectile = 10;
-    this.countEnemy = 5;
-    this.time = 60000;
-    this.health = 4;
+    this.countProjectile = COUNT_PROJECTILE;
+    this.countEnemy = COUNT_ENEMY;
+    this.time = TIME;
+    this.health = HEALTH;
     this.gameEnded = false;
     this.startBossFight = true;
     this.player.isAlive = true;
@@ -425,23 +435,21 @@ export class GameScene extends Container implements IScene {
     this.removeChild(this.boss, this.healthBar, this.player);
 
     while (this.projectilesBossContainer.children[0] != null) {
-      this.projectilesBossContainer.children[0].removeFromParent()
+      this.projectilesBossContainer.children[0].destroy();
     }
 
     while (this.projectilesPlayerContainer.children[0] != null) {
-      this.projectilesPlayerContainer.children[0].removeFromParent()
+      this.projectilesPlayerContainer.children[0].destroy();
     }
     while (this.particlesContainer.children[0] != null) {
-      this.particlesContainer.children[0].removeFromParent()
+      this.particlesContainer.children[0].destroy();
     }
 
     this.particlesContainer.children.forEach((children) => children.destroy());
     while (this.enemiesContainer.children[0] != null) {
-      const invader = this.enemiesContainer.children[0] as Enemy
-      invader.removeFromParent()
-
+      const enemy = this.enemiesContainer.children[0] as Enemy;
+      enemy.destroy();
     }
-
   }
 
   public beginEndGame(message: "Lose" | "Win"): void {
