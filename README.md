@@ -2,7 +2,7 @@
 
 ## [pixijs](https://pixijs.com/)-[typescript](https://www.typescriptlang.org/)-[howlerjs](https://howlerjs.com/)-[VITE](https://vitejs.dev/)
 
-# [space_shooter](space-shooter-netgame.vercel.app/)
+# [space_shooter](https://space-shooter-netgame.vercel.app/)
 
 ## Commands:
 
