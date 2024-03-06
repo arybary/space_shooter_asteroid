@@ -5,10 +5,11 @@ export class BossController {
 
     constructor(boss: Ship) {
         this.boss = boss;
+  }
 
-    }
-
-
+    shoot = () => {
+        this.boss.state.shoot = true;
+    };
 
     moveLeft = () => {
         this.boss.state.movingLeft = false;
@@ -24,7 +25,7 @@ export class BossController {
         this.boss.state.movingRight = false;
   };
 
-    randomizeFunction(
+    randomizeMove(
         func1: () => void,
         func2: () => void,
         func3: () => void
@@ -33,9 +34,9 @@ export class BossController {
         return functions[Math.floor(Math.random() * functions.length)];
     }
 
-    changeFunctionRandomly() {
+    changeFunctionRandomlyMove() {
         setInterval(() => {
-        const randomFunction = this.randomizeFunction(
+        const randomFunction = this.randomizeMove(
             this.moveLeft,
             this.moveRight,
             this.moveStop

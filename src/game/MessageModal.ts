@@ -1,14 +1,9 @@
 import { Container, Graphics, Text, TextStyle } from "pixi.js";
-
-interface IStartModalOptions {
-  viewWidth: number;
-  viewHeight: number;
-
-}
+import { FONT_FAMILY } from "../utils/constants";
 
 export class MessageModal extends Container {
   public styleTextButton = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: FONT_FAMILY,
     fontSize: 32,
     fontStyle: "normal",
     fontWeight: "bold",
@@ -37,14 +32,14 @@ export class MessageModal extends Container {
     borderRadius: 10,
   };
 
-  constructor(options: IStartModalOptions) {
+  constructor() {
     super();
-    this.setup(options);
-    this.draw(options);
+    this.setup();
+    this.draw();
     this.setupEventListeners();
   }
 
-  setup(_: IStartModalOptions): void {
+  setup(): void {
     const { buttonOptions } = this;
     this.button = new Graphics();
     this.button.eventMode = "dynamic";
@@ -61,7 +56,7 @@ export class MessageModal extends Container {
     this.button.addChild(this.buttonText);
   }
 
-  draw(_: IStartModalOptions): void {
+  draw(): void {
     const { buttonOptions } = this;
 
     this.button.beginFill(buttonOptions.fill, 0.25);

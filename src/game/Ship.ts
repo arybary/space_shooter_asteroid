@@ -15,7 +15,7 @@ export class Ship extends AnimatedSprite {
     scale: 0.5,
     angle: 0.3,
     moveSpeed: 6,
-    bulletSpeed: -6,
+
   };
 
   public velocity = {
@@ -68,21 +68,16 @@ export class Ship extends AnimatedSprite {
     }
   }
 
-  shipShoot(direction: "up" | "down"): Projectile {
-    let directionProjectile: number = Ship.options.bulletSpeed;
-    if (direction == "up") {
-      directionProjectile = Ship.options.bulletSpeed;
-    }
-    if (direction == "down") {
-      directionProjectile = -Ship.options.bulletSpeed / 3;
-    }
+  shipShoot(speed: number): Projectile {
+
+
     const projectile = new Projectile({
       id: ++this.ids,
       app: this.app,
       radius: 10,
       fillColor: COLOR_DARK_GRAY,
       vx: 0,
-      vy: directionProjectile,
+      vy: speed,
     });
     projectile.anchor.set(0.5, 0.5);
     projectile.position.set(this.x, this.y);

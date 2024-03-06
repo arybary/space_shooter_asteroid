@@ -79,10 +79,10 @@ export class GameScene extends Container implements IScene {
       app: this.app,
       shipAnimation: options.bossAnimation,
     });
-    this.healthBar = new HealthBossBar({ boxWidth: this.health });
+    this.healthBar = new HealthBossBar({ boxWidth: this.boss.width });
     this.enemyTexture = options.asterodTexture;
 
-    this.addChild(this.background, this.player, this.statusBar);
+    this.addChild(this.background, this.statusBar);
     this.projectilesPlayerContainer = new ParticleContainer(2000, {
       scale: true,
       position: true,
@@ -105,10 +105,7 @@ export class GameScene extends Container implements IScene {
       this.particlesContainer
     );
 
-    this.messageModal = new MessageModal({
-      viewWidth: options.viewWidth,
-      viewHeight: options.viewHeight,
-    });
+    this.messageModal = new MessageModal();
     this.messageModal.visible = true;
     this.addChild(this.messageModal);
     this.messageModal.eventMode = "auto";
@@ -192,7 +189,7 @@ export class GameScene extends Container implements IScene {
 
     if (!this.timeoutForShootPlayer && this.player.state.shoot) {
       this.audio.playShot();
-      this.projectilesPlayerContainer.addChild(this.player.shipShoot("up"));
+      this.projectilesPlayerContainer.addChild(this.player.shipShoot(-6));
       this.timeoutForShootPlayer = setTimeout(() => {
         this.timeoutForShootPlayer = null;
       }, 500);
@@ -203,7 +200,7 @@ export class GameScene extends Container implements IScene {
       this.countProjectile > 0
     ) {
       this.audio.playShot();
-      this.projectilesBossContainer.addChild(this.boss.shipShoot("down"));
+      this.projectilesBossContainer.addChild(this.boss.shipShoot(3));
       this.timeoutForShootBoss = setTimeout(() => {
         this.timeoutForShootBoss = null;
       }, 2000);
@@ -226,7 +223,7 @@ export class GameScene extends Container implements IScene {
           bottom: y + height,
         })
       ) {
-        particle.removeFromParent();
+        particle.destroy();
         this.countProjectile -= 1;
       }
     });
@@ -248,34 +245,41 @@ export class GameScene extends Container implements IScene {
       const particle: Particle = child as Particle;
       particle.update();
       if (particle.alpha <= 0 || particle.isOutOfViewport(bounds)) {
-        particle.removeFromParent();
+        particle.destroy();
       }
     });
   }
   public bossFight() {
-    this.addChild(this.boss, this.healthBar);
 
-    this.boss.updateMove();
+
+
 
     if (this.startBossFight) {
       this.audio.playBossFight();
       this.countProjectile = 10;
       this.time = 60000;
-      this.boss.state.shoot = true;
+      this.addChild(this.boss);
+      this.boss.addChild(this.healthBar)
+      this.healthBar.position.set(-this.boss.width / 2, -this.boss.height - this.boss.height / 2)
+      this.healthBar.rotation = 0
 
-      this.bossController.changeFunctionRandomly();
+      this.bossController.changeFunctionRandomlyMove();
+      this.bossController.shoot();
       this.startBossFight = false;
     }
 
-    if (this.health <= 0) {
+    this.boss.updateMove();
+
+    if (this.health === 0) {
       this.beginEndGame("Win");
     }
-    if (this.countProjectile === 0 && this.health > 0) {
+    if (!this.startBossFight && this.countProjectile === 0 && this.health > 0) {
       this.beginEndGame("Lose");
     }
     if (!this.player.isAlive) {
       this.beginEndGame("Lose");
     }
+
     const { x, y, width, height } = this;
     this.updateContainer(this.projectilesBossContainer, {
       left: x,
@@ -295,14 +299,14 @@ export class GameScene extends Container implements IScene {
         const projectileBounds = (child as Projectile).getBounds();
         if (Collision.checkCollision(enemyBounds, projectileBounds) > 0) {
           this.audio.playExplosion();
-          (child as Projectile).removeFromParent();
+          (child as Projectile).destroy();
           this.spawnParticles({
             count: enemy.width,
             posX: enemy.x,
             posY: enemy.y,
             fillColor: 0xbaa0de,
           });
-          (enemy as Enemy).removeFromParent();
+          (enemy as Enemy).destroy();
           this.countEnemy -= 1;
           this.countProjectile -= 1;
         }
@@ -316,9 +320,10 @@ export class GameScene extends Container implements IScene {
       const bossBounds = this.boss.getBounds();
       if (Collision.checkCollision(bossBounds, projectileBounds) > 0) {
         this.audio.playExplosion();
-        this.health -= 1;
+
         (child as Projectile).removeFromParent();
         this.countProjectile -= 1;
+        this.health -= 1;
 
         this.spawnParticles({
           count: this.boss.width,
@@ -407,6 +412,7 @@ export class GameScene extends Container implements IScene {
     this.player.isAlive = true;
     this.messageModal.visible = false;
     this.audio.playMusic();
+    this.addChild(this.player);
 
     setTimeout(() => {
       this.spawnEnemies();
@@ -416,23 +422,26 @@ export class GameScene extends Container implements IScene {
   public endGame(): void {
     this.messageModal.visible = true;
     this.bossController.stop();
-    this.removeChild(this.boss, this.healthBar);
+    this.removeChild(this.boss, this.healthBar, this.player);
+
     while (this.projectilesBossContainer.children[0] != null) {
-      this.projectilesBossContainer.removeChild(
-        this.projectilesBossContainer.children[0]
-      );
+      this.projectilesBossContainer.children[0].removeFromParent()
     }
+
     while (this.projectilesPlayerContainer.children[0] != null) {
-      this.projectilesPlayerContainer.removeChild(
-        this.projectilesBossContainer.children[0]
-      );
-    }
-    while (this.enemiesContainer.children[0] != null) {
-      this.enemiesContainer.removeChild(this.enemiesContainer.children[0]);
+      this.projectilesPlayerContainer.children[0].removeFromParent()
     }
     while (this.particlesContainer.children[0] != null) {
-      this.particlesContainer.removeChild(this.particlesContainer.children[0]);
+      this.particlesContainer.children[0].removeFromParent()
     }
+
+    this.particlesContainer.children.forEach((children) => children.destroy());
+    while (this.enemiesContainer.children[0] != null) {
+      const invader = this.enemiesContainer.children[0] as Enemy
+      invader.removeFromParent()
+
+    }
+
   }
 
   public beginEndGame(message: "Lose" | "Win"): void {
@@ -443,8 +452,6 @@ export class GameScene extends Container implements IScene {
       this.audio.playWin();
     }
 
-    this.removeChild(this.boss, this.healthBar);
-    this.player.setKilled();
     this.messageModal.setButtonText(`You ${message}`);
     setTimeout(() => this.endGame(), 1000);
   }

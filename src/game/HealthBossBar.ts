@@ -2,15 +2,15 @@ import { Container, Graphics } from "pixi.js";
 import gsap from "gsap";
 
 interface IHealthBossBarOptions {
-    boxWidth?: number;
+    boxWidth: number;
 }
 
 export class HealthBossBar extends Container {
+    boxWidth: number;
     public boxOptions = {
         border: 0xffffff,
         borderThick: 4,
-        width: 442,
-        height: 38,
+        height: 28,
         fill: 0x818cf8,
         empty: 0xff0000,
     };
@@ -19,20 +19,21 @@ export class HealthBossBar extends Container {
     public fillBar!: Graphics;
     public emptyBar!: Graphics;
 
-    constructor(options: IHealthBossBarOptions) {
+    constructor({ boxWidth }: IHealthBossBarOptions) {
         super();
-        this.setup(options);
-        this.draw(options);
+        this.boxWidth = boxWidth
+        this.setup();
+        this.draw();
     }
 
-    setup(_: IHealthBossBarOptions): void {
+    setup(): void {
         this.borderBox = new Graphics();
         this.addChild(this.borderBox);
 
         const bars = new Container();
         bars.rotation = Math.PI;
         bars.position.set(
-            this.boxOptions.width,
+            this.boxWidth,
             this.boxOptions.height - this.boxOptions.borderThick
         );
 
@@ -46,17 +47,18 @@ export class HealthBossBar extends Container {
         this.addChild(bars);
     }
 
-    draw(_: IHealthBossBarOptions): void {
+    draw(): void {
+
         const { borderBox, boxOptions, fillBar, emptyBar } = this;
         borderBox.beginFill(boxOptions.border);
-        borderBox.drawRect(0, 0, boxOptions.width, boxOptions.height);
+        borderBox.drawRect(0, 0, this.boxWidth, boxOptions.height);
         borderBox.endFill();
 
         emptyBar.beginFill(boxOptions.empty);
         emptyBar.drawRect(
             0,
             0,
-            boxOptions.width - boxOptions.borderThick,
+            this.boxWidth - boxOptions.borderThick,
             boxOptions.height - 2 * boxOptions.borderThick
         );
         emptyBar.endFill();
@@ -65,7 +67,7 @@ export class HealthBossBar extends Container {
         fillBar.drawRect(
             0,
             0,
-            boxOptions.width - boxOptions.borderThick,
+            this.boxWidth - boxOptions.borderThick,
             boxOptions.height - 2 * boxOptions.borderThick
         );
         fillBar.endFill();
@@ -78,7 +80,7 @@ export class HealthBossBar extends Container {
             health = 4;
         }
         gsap.to(this.fillBar, {
-            width: (this.boxOptions.width * health) / 4,
+            width: ((this.boxWidth as number) * health) / 4,
         });
     }
 }
