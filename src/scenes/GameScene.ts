@@ -73,6 +73,7 @@ export class GameScene extends Container implements IScene {
     this.playerController = new PlayerController({
       player: this.player,
       game: this,
+      background: this.background,
     });
     this.bossController = new BossController(this.boss);
   }
@@ -83,6 +84,7 @@ export class GameScene extends Container implements IScene {
 
     this.player = new Ship({
       app: this.app,
+
       shipAnimation: options.playerAnimation,
     });
 
