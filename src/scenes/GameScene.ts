@@ -71,7 +71,6 @@ export class GameScene extends Container implements IScene {
 
     this.setup(options);
     this.playerController = new PlayerController({
-      app: this.app,
       player: this.player,
       game: this,
     });
