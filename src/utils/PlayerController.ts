@@ -14,10 +14,10 @@ export class PlayerController {
     private background: Sprite;
 
     constructor({ background, game, player }: IPlayerController) {
-        this.background = background
-        this.player = player;
-        this.game = game;
-        this.addEventListeners();
+      this.background = background;
+      this.player = player;
+      this.game = game;
+      this.addEventListeners();
   }
 
     private addEventListeners(): void {
@@ -35,17 +35,17 @@ export class PlayerController {
             case "Space":
             case "ShiftLeft":
                 this.player.state.shoot = true;
-            break;
-        case "KeyA":
-        case "ArrowLeft":
-            this.player.state.movingLeft = true;
-            this.player.state.movingRight = false;
-            break;
-        case "KeyD":
-        case "ArrowRight":
-            this.player.state.movingLeft = false;
-            this.player.state.movingRight = true;
-            break;
+                break;
+            case "KeyA":
+            case "ArrowLeft":
+                this.player.state.movingLeft = true;
+                this.player.state.movingRight = false;
+                break;
+            case "KeyD":
+            case "ArrowRight":
+                this.player.state.movingLeft = false;
+                this.player.state.movingRight = true;
+                break;
     }
   };
 
@@ -60,11 +60,11 @@ export class PlayerController {
             case "KeyA":
             case "ArrowLeft":
                 this.player.state.movingLeft = false;
-            break;
-        case "KeyD":
+                break;
+            case "KeyD":
             case "ArrowRight":
-            this.player.state.movingRight = false;
-            break;
+                this.player.state.movingRight = false;
+                break;
     }
   };
 
@@ -80,23 +80,22 @@ export class PlayerController {
         pressed: boolean | undefined,
         e: FederatedPointerEvent
     ): void {
-        1
-        const point = this.game.toLocal(e.global);
-        console.log(point, this.background.height)
+      1;
+      const point = this.game.toLocal(e.global);
 
-        if (pressed && point.x > this.player.x) {
-            this.player.state.movingRight = true;
-        }
-        if (pressed && point.x < this.player.x) {
+      if (pressed && point.x > this.player.x) {
+          this.player.state.movingRight = true;
+      }
+      if (pressed && point.x < this.player.x) {
           this.player.state.movingLeft = true;
       }
-        if (pressed && point.y < this.background.height - this.player.height) {
+      if (pressed && point.y < this.background.height - this.player.height) {
           this.player.state.shoot = true;
       }
-        if (!pressed) {
+      if (!pressed) {
           this.player.state.movingLeft = false;
           this.player.state.movingRight = false;
           this.player.state.shoot = false;
       }
-    }
+  }
 }

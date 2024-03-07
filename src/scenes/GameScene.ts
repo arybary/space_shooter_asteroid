@@ -354,7 +354,7 @@ export class GameScene extends Container implements IScene {
       if (Collision.checkCollision(playerBounds, projectileBossBounds) > 0) {
         this.audio.playExplosion();
         this.player.isAlive = false;
-        (projectileBoss as Projectile).removeFromParent();
+        (projectileBoss as Projectile).destroy();
       }
       this.projectilesPlayerContainer.children.forEach((projectilePlayer) => {
         const projectilePlayerBounds = (
@@ -380,8 +380,8 @@ export class GameScene extends Container implements IScene {
             posY: projectileBoss.y,
             fillColor: COLOR_DARK_GRAY,
           });
-          projectilePlayer.removeFromParent();
-          projectileBoss.removeFromParent();
+          projectilePlayer.destroy();
+          projectileBoss.destroy();
           this.countProjectile -= 1;
         }
       });
