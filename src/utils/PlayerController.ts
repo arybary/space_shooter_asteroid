@@ -84,10 +84,12 @@ export class PlayerController {
             this.player.state.shoot = true;
         }
         if (!pressed) {
+            this.player.state.shoot = false;
             this.player.state.movingLeft = false;
             this.player.state.movingRight = false;
-            this.player.state.shoot = false;
         }
+
+
     }
 
     private handlePlayerStartMove = (e: FederatedPointerEvent): void => {
@@ -95,7 +97,7 @@ export class PlayerController {
     };
 
     private handlePlayerKeepMove = (e: FederatedPointerEvent): void => {
-        this.handlePlayerMove(undefined, e);
+        this.handlePlayerMove(true, e);
     };
 
     private handlePlayerStopMove = (e: FederatedPointerEvent): void => {
