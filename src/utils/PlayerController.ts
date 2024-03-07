@@ -1,20 +1,17 @@
-import { Application, FederatedPointerEvent } from "pixi.js";
+import { FederatedPointerEvent } from "pixi.js";
 import { Ship } from "../game/Ship";
 import { GameScene } from "../scenes/GameScene";
 
 interface IPlayerController {
     game: GameScene;
     player: Ship;
-    app: Application;
 }
 
 export class PlayerController {
-    private app: Application;
     private player: Ship;
     private game: GameScene;
 
-    constructor({ app, game, player }: IPlayerController) {
-        this.app = app;
+    constructor({ game, player }: IPlayerController) {
         this.player = player;
         this.game = game;
         this.addEventListeners();
@@ -73,15 +70,22 @@ export class PlayerController {
   };
     private handlePlayerMove(pressed: boolean, e: FederatedPointerEvent): void {
         const point = this.game.toLocal(e.global);
-      const heightForShoot = this.app.view.height / 2 - this.player.height;
+        const height = this.game.height - this.player.height
 
-      if (pressed && point.x > this.player.x) {
+        if (
+            pressed &&
+            point.x > this.player.x
+
+      ) {
           this.player.state.movingRight = true;
       }
-      if (pressed && point.x < this.player.x) {
+        if (
+            pressed &&
+            point.x < this.player.x
+        ) {
           this.player.state.movingLeft = true;
       }
-      if (pressed && point.y < heightForShoot) {
+        if (pressed && point.y < height) {
           this.player.state.shoot = true;
       }
       if (!pressed) {
