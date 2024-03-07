@@ -85,7 +85,7 @@ export class PlayerController {
         if (pressed && point.x < this.player.x) {
           this.player.state.movingLeft = true;
       }
-        if (pressed && point.y < this.game.height - this.player.height) {
+        if (pressed && point.y < this.game.height / 2) {
           this.player.state.shoot = true;
       }
         if (!pressed) {
