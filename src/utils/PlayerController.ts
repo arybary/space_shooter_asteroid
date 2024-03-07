@@ -20,7 +20,6 @@ export class PlayerController {
     private addEventListeners(): void {
         this.game.eventMode = "dynamic";
         this.game.on("pointerdown", this.handlePlayerStartMove);
-        this.game.on("pointermove", this.handlePlayerKeepMove);
         this.game.on("pointerup", this.handlePlayerStopMove);
         window.addEventListener("keydown", this.handleKeyDown);
         window.addEventListener("keyup", this.handleKeyUp);
@@ -33,7 +32,6 @@ export class PlayerController {
             case "Space":
             case "ShiftLeft":
                 this.player.state.shoot = true;
-
             break;
         case "KeyA":
         case "ArrowLeft":
@@ -59,51 +57,41 @@ export class PlayerController {
             case "KeyA":
             case "ArrowLeft":
                 this.player.state.movingLeft = false;
-
             break;
         case "KeyD":
-        case "ArrowRight":
-            this.player.state.movingLeft = false;
+            case "ArrowRight":
             this.player.state.movingRight = false;
             break;
     }
   };
-    private handlePlayerMove(pressed: boolean, e: FederatedPointerEvent): void {
-        const point = this.game.toLocal(e.global);
-        const height = this.game.height - this.player.height
-
-        if (
-            pressed &&
-            point.x > this.player.x
-
-      ) {
-          this.player.state.movingRight = true;
-      }
-        if (
-            pressed &&
-            point.x < this.player.x
-        ) {
-          this.player.state.movingLeft = true;
-      }
-        if (pressed && point.y < height) {
-          this.player.state.shoot = true;
-      }
-      if (!pressed) {
-          this.player.state.shoot = false;
-          this.player.state.movingLeft = false;
-          this.player.state.movingRight = false;
-      }
-  }
 
     private handlePlayerStartMove = (e: FederatedPointerEvent): void => {
-        this.handlePlayerMove(true, e);
-    };
-
-    private handlePlayerKeepMove = (e: FederatedPointerEvent): void => {
         this.handlePlayerMove(true, e);
     };
 
     private handlePlayerStopMove = (e: FederatedPointerEvent): void => {
         this.handlePlayerMove(false, e);
     };
+
+    private handlePlayerMove(
+        pressed: boolean | undefined,
+        e: FederatedPointerEvent
+    ): void {
+        const point = this.game.toLocal(e.global);
+
+        if (pressed && point.x > this.player.x) {
+            this.player.state.movingRight = true;
+        }
+        if (pressed && point.x < this.player.x) {
+          this.player.state.movingLeft = true;
+      }
+        if (pressed && point.y < this.game.height - this.player.height) {
+          this.player.state.shoot = true;
+      }
+        if (!pressed) {
+          this.player.state.movingLeft = false;
+          this.player.state.movingRight = false;
+          this.player.state.shoot = false;
+      }
+    }
 }
