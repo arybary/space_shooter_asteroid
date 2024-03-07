@@ -71,21 +71,13 @@ export class PlayerController {
     private handlePlayerMove(pressed: boolean, e: FederatedPointerEvent): void {
         const point = this.game.toLocal(e.global);
 
-      if (
-          pressed &&
-          point.x > this.player.x &&
-          point.y > this.game.height - this.player.height
-      ) {
+      if (pressed && point.x > this.player.x) {
           this.player.state.movingRight = true;
       }
-      if (
-          pressed &&
-          point.x < this.player.x &&
-          point.y > this.game.height - this.player.height
-      ) {
+      if (pressed && point.x < this.player.x) {
           this.player.state.movingLeft = true;
       }
-      if (pressed && point.y < this.game.height - this.player.height) {
+      if (pressed && point.y < this.game.height / 2) {
           this.player.state.shoot = true;
       }
       if (!pressed) {
