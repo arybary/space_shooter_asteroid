@@ -7,25 +7,25 @@ export class BossController {
         this.boss = boss;
   }
 
-    shoot = () => {
+    public shoot = () => {
         this.boss.state.shoot = true;
     };
 
-    moveLeft = () => {
+    private moveLeft = () => {
         this.boss.state.movingLeft = false;
         this.boss.state.movingRight = true;
     };
-    moveStop = () => {
+    private moveStop = () => {
         this.boss.state.movingLeft = false;
         this.boss.state.movingRight = false;
   };
 
-    moveRight = () => {
+    private moveRight = () => {
         this.boss.state.movingLeft = true;
         this.boss.state.movingRight = false;
   };
 
-    randomizeMove(
+    private randomizeMove(
         func1: () => void,
         func2: () => void,
         func3: () => void
@@ -34,17 +34,17 @@ export class BossController {
         return functions[Math.floor(Math.random() * functions.length)];
     }
 
-    changeFunctionRandomlyMove() {
+    public changeFunctionRandomlyMove() {
         setInterval(() => {
-        const randomFunction = this.randomizeMove(
-            this.moveLeft,
-            this.moveRight,
-            this.moveStop
-        );
-        randomFunction();
+            const randomFunction = this.randomizeMove(
+                this.moveLeft,
+                this.moveRight,
+                this.moveStop
+            );
+            randomFunction();
     }, 1000);
   }
-    stop() {
+    public stop() {
         this.boss.state.movingLeft = false;
         this.boss.state.movingRight = false;
         this.boss.state.shoot = false;
